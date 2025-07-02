@@ -1,0 +1,42 @@
+* {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+html, body {
+  background-color: #000;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
+  overflow: hidden;
+  text-align: center;
+}
+
+#phaser-div {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #222;
+}
+
+#phaser-div > canvas {
+  display: block;
+  box-shadow: 0 0 24px #0008;
+  /* width/height biarkan default dari Phaser (1024x768) */
+}
+
+.info{
+  width: 1024px;
+  left:50%;
+  position:absolute;
+  margin:775px 0 0 -512px;
+  color:white;
+  font-family: "monospace";
+}
+
+.info a{
+  color:white;
+}

@@ -1,0 +1,51 @@
+// Dialog for Scene 4
+export const scene4Dialog = [
+  {
+    image: '/assets/game/scene4/frame1.png',
+    audio: '/assets/game/scene4/audio4.mp3',
+    text: 'Akhirnya, sistem berhasil dipulihkan dan E.V.I kembali normal.',
+    effect: null,
+    questionId: null,
+    autoPlay: true,
+  },
+  {
+    image: '/assets/game/scene4/char.gif',
+    audio: '/assets/game/scene4/audio4.mp3',
+    text: 'E.V.I: Terima kasih atas bantuanmu selama ini!',
+    effect: null,
+    questionId: null,
+    autoPlay: false,
+  },
+  {
+    image: '/assets/game/scene4/char.gif',
+    audio: '/assets/game/scene4/audio4.mp3',
+    text: 'Menurutmu, apakah AI akan semakin penting di masa depan?',
+    effect: null,
+    questionId: 9,
+    autoPlay: false,
+  },
+  {
+    image: '/assets/game/scene4/char.gif',
+    audio: '/assets/game/scene4/audio4.mp3',
+    text: 'Apa harapanmu terhadap perkembangan AI ke depan?',
+    effect: null,
+    questionId: 10,
+    autoPlay: false,
+  },
+  {
+    image: '/assets/game/scene4/frame2.png',
+    audio: '/assets/game/scene4/audio4.mp3',
+    text: 'E.V.I: Jawabanmu sangat berarti untuk pengembangan sistem ke depannya.',
+    effect: null,
+    questionId: null,
+    autoPlay: true,
+  },
+  {
+    image: '/assets/game/scene4/frame3.png',
+    audio: '/assets/game/scene4/audio4.mp3',
+    text: 'Terima kasih telah bermain! Sampai jumpa di petualangan berikutnya.',
+    effect: null,
+    questionId: null,
+    autoPlay: true,
+  },
+]; 

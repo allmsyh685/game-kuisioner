@@ -1,0 +1,225 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { Statistics } from '@/types';
+import { getStatistics } from '@/lib/api';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Users, FileText, BarChart3, Download } from 'lucide-react';
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+
+export default function AdminDashboard() {
+  const [statistics, setStatistics] = useState<Statistics | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStatistics = async () => {
+      try {
+        const data = await getStatistics();
+        setStatistics(data);
+      } catch (error) {
+        console.error('Error fetching statistics:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStatistics();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Memuat data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+          <p className="text-gray-600">Kelola survey dan lihat statistik respons</p>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-center">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Users className="w-6 h-6 text-blue-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Total Responses</p>
+                <p className="text-2xl font-bold text-gray-900">{statistics?.total_responses || 0}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-center">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <FileText className="w-6 h-6 text-green-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Questions</p>
+                <p className="text-2xl font-bold text-gray-900">10</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-center">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <BarChart3 className="w-6 h-6 text-purple-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Active</p>
+                <p className="text-2xl font-bold text-gray-900">10</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-center">
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <Download className="w-6 h-6 text-orange-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Export</p>
+                <p className="text-2xl font-bold text-gray-900">CSV</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <Link href="/admin/questions" className="block">
+            <div className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer">
+              <div className="flex items-center mb-4">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <FileText className="w-5 h-5 text-blue-600" />
+                </div>
+                <h3 className="ml-3 text-lg font-semibold text-gray-900">Kelola Pertanyaan</h3>
+              </div>
+              <p className="text-gray-600">Tambah, edit, atau hapus pertanyaan survey</p>
+            </div>
+          </Link>
+
+          <Link href="/admin/responses" className="block">
+            <div className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer">
+              <div className="flex items-center mb-4">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <Users className="w-5 h-5 text-green-600" />
+                </div>
+                <h3 className="ml-3 text-lg font-semibold text-gray-900">Lihat Responses</h3>
+              </div>
+              <p className="text-gray-600">Lihat semua jawaban dari responden</p>
+            </div>
+          </Link>
+
+          <Link href="/admin/export" className="block">
+            <div className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer">
+              <div className="flex items-center mb-4">
+                <div className="p-2 bg-orange-100 rounded-lg">
+                  <Download className="w-5 h-5 text-orange-600" />
+                </div>
+                <h3 className="ml-3 text-lg font-semibold text-gray-900">Export Data</h3>
+              </div>
+              <p className="text-gray-600">Download data dalam format CSV</p>
+            </div>
+          </Link>
+        </div>
+
+        {/* Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Education Level Chart */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Tingkat Pendidikan</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={statistics?.education_statistics || []}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="count"
+                >
+                  {statistics?.education_statistics.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* AI Usage Frequency Chart */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Frekuensi Penggunaan AI</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={statistics?.ai_usage_statistics || []}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="ai_usage_frequency" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="count" fill="#8884d8" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* AI Tool Usage Chart */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">AI Tool yang Digunakan</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={statistics?.ai_tool_statistics || []}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="ai_tool_used" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="count" fill="#82ca9d" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Recent Activity */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Aktivitas Terbaru</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium text-gray-900">Survey baru diisi</p>
+                  <p className="text-sm text-gray-600">2 menit yang lalu</p>
+                </div>
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium text-gray-900">Data diexport</p>
+                  <p className="text-sm text-gray-600">1 jam yang lalu</p>
+                </div>
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium text-gray-900">Pertanyaan diupdate</p>
+                  <p className="text-sm text-gray-600">3 jam yang lalu</p>
+                </div>
+                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+} 
