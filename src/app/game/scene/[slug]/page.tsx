@@ -419,7 +419,7 @@ const Scene: React.FC = () => {
                   </form>
                 ) : (
                   // Jika bukan frame pertanyaan, tampilkan dialog biasa
-                  <div className="text-2xl font-mono text-center min-h-[48px] drop-shadow-lg text-white mb-6 w-full leading-relaxed">
+                  <div className="text-2xl font-mono text-center min-h-[32px] drop-shadow-lg text-white mb-4 w-full leading-tight">
                     {frameIdx === 2 && slug === 'scene1'
                       ? getIdentifikasiText(
                           userName,
