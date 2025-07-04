@@ -75,5 +75,7 @@ export const scene3Dialog = [
     effect: null,
     questionId: null,
     autoPlay: true,
+    redirectToTowerGames: true,
+    waves: 1,
   },
 ]; 
