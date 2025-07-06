@@ -1,46 +1,107 @@
 'use client'
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { Users, FileText, BarChart3, Gamepad2 } from 'lucide-react';
 
 export default function Home() {
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const carouselSlides = [
+    {
+      bgImg: '/assets/background_1.jpg',
+      title: 'Start Research Survey',
+      desc: 'Explore the fascinating world of AI through interactive research and engaging tower defense gameplay.',
+      button: {
+        text: '🎯 Start Research Survey',
+        href: '/game/scene/scene1',
+        style: 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white',
+      },
+    },
+    {
+      bgImg: '/assets/background-2.jpg',
+      title: 'See Leaderboard',
+      desc: 'Compete with other players and see your scores on our dynamic leaderboard system.',
+      button: {
+        text: '🏆 View Leaderboard',
+        href: '/towergames/leaderboard',
+        style: 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black',
+      },
+    },
+    {
+      bgImg: '/assets/background-3.jpg',
+      title: 'Admin Panel',
+      desc: 'Access the admin dashboard to manage questions, responses, and more.',
+      button: {
+        text: '🔑 Go to Admin',
+        href: '/admin',
+        style: 'bg-gradient-to-r from-gray-700 to-blue-700 hover:from-gray-800 hover:to-blue-800 text-white',
+      },
+    },
+  ];
+
+  const prevSlide = () => setCarouselIndex((carouselIndex + carouselSlides.length - 1) % carouselSlides.length);
+  const nextSlide = () => setCarouselIndex((carouselIndex + 1) % carouselSlides.length);
+
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
-                GameFix2025
-              </span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-              Explore the fascinating world of AI through interactive research and engaging tower defense gameplay
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/game/scene/scene1"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
-              >
-                🎯 Start Research Survey
-              </Link>
-              <Link
-                href="/towergames"
-                className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
-              >
-                🏰 Play Tower Defense
-              </Link>
-            </div>
+      {/* Hero Section as Carousel */}
+      <section
+        className="relative min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8 transition-all duration-500"
+        style={{
+          backgroundImage: `url(${carouselSlides[carouselIndex].bgImg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/60 z-0" />
+        <div className="max-w-3xl mx-auto text-center py-12 relative z-10">
+          <div
+            className="inline-block w-full bg-black/60 rounded-2xl shadow-2xl px-6 py-10 md:px-12 md:py-16"
+            style={{ minHeight: '340px' }}
+          >
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 drop-shadow-lg text-white">{carouselSlides[carouselIndex].title}</h1>
+            <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto drop-shadow-lg text-white">{carouselSlides[carouselIndex].desc}</p>
+            <a
+              href={carouselSlides[carouselIndex].button.href}
+              className={`font-bold py-4 px-8 rounded-lg text-lg transition-all duration-200 transform hover:scale-105 shadow-lg ${carouselSlides[carouselIndex].button.style}`}
+            >
+              {carouselSlides[carouselIndex].button.text}
+            </a>
           </div>
+        </div>
+        {/* Carousel Controls */}
+        <button
+          onClick={prevSlide}
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 hover:bg-opacity-60 text-white rounded-full p-2 z-10"
+          aria-label="Previous Slide"
+        >
+          &#8592;
+        </button>
+        <button
+          onClick={nextSlide}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 hover:bg-opacity-60 text-white rounded-full p-2 z-10"
+          aria-label="Next Slide"
+        >
+          &#8594;
+        </button>
+        {/* Dots */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
+          {carouselSlides.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCarouselIndex(idx)}
+              className={`w-3 h-3 rounded-full ${carouselIndex === idx ? 'bg-white' : 'bg-white/50'} border border-white`}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-black bg-opacity-20">
+      <section className="min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8 bg-black bg-opacity-20">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 mt-8 mb-8 md:mt-0 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               What You'll Experience
             </h2>
@@ -69,7 +130,7 @@ export default function Home() {
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-gradient-to-br from-yellow-900/50 to-orange-900/50 p-8 rounded-xl border border-yellow-700/30 hover:border-yellow-500/50 transition-all duration-300">
+            <div className="bg-gradient-to-br from-yellow-900/50 to-orange-900/50 p-8 rounded-xl border border-yellow-700/30 hover:border-yellow-500/50 transition-all duration-300 mb-8 md:mb-0">
               <div className="text-4xl mb-4">🏆</div>
               <h3 className="text-xl font-bold text-white mb-4">Leaderboard</h3>
               <p className="text-gray-300">
@@ -81,7 +142,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section className="min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Ready to Get Started?
