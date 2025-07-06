@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "GameFix2025 - AI Research Game",
-  description: "Interactive research game exploring AI usage patterns and tower defense gameplay",
+  description: "Game penelitian interaktif yang mengeksplorasi pola penggunaan AI dan gameplay pertahanan menara",
 };
 
 // Navbar Component

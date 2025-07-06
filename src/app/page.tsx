@@ -9,20 +9,20 @@ export default function Home() {
   const carouselSlides = [
     {
       bgImg: '/assets/background_1.jpg',
-      title: 'Start Research Survey',
-      desc: 'Explore the fascinating world of AI through interactive research and engaging tower defense gameplay.',
+      title: 'Mulai Survei Penelitian',
+      desc: 'Jelajahi dunia AI yang menarik melalui penelitian interaktif dan permainan pertahanan menara yang menarik.',
       button: {
-        text: '🎯 Start Research Survey',
+        text: '🎯 Mulai Survei Penelitian',
         href: '/game/scene/scene1',
         style: 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white',
       },
     },
     {
       bgImg: '/assets/background-2.jpg',
-      title: 'See Leaderboard',
-      desc: 'Compete with other players and see your scores on our dynamic leaderboard system.',
+      title: 'Lihat Papan Peringkat',
+      desc: 'Bersaing dengan pemain lain dan lihat skor Anda pada sistem papan peringkat dinamis kami.',
       button: {
-        text: '🏆 View Leaderboard',
+        text: '🏆 Lihat Papan Peringkat',
         href: '/towergames/leaderboard',
         style: 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black',
       },
@@ -30,9 +30,9 @@ export default function Home() {
     {
       bgImg: '/assets/background-3.jpg',
       title: 'Admin Panel',
-      desc: 'Access the admin dashboard to manage questions, responses, and more.',
+      desc: 'Akses dashboard admin untuk mengelola pertanyaan, tanggapan, dan banyak lagi.',
       button: {
-        text: '🔑 Go to Admin',
+        text: '🔑 Pergi Ke Dashboard Admin',
         href: '/admin',
         style: 'bg-gradient-to-r from-gray-700 to-blue-700 hover:from-gray-800 hover:to-blue-800 text-white',
       },
@@ -145,23 +145,23 @@ export default function Home() {
       <section className="min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Ready to Get Started?
+            Apakah Kamu Siap Untuk Memulai Game?
           </h2>
           <p className="text-xl text-gray-300 mb-8">
-            Join thousands of participants in our research study and enjoy an amazing gaming experience
+            Bergabunglah dengan ribuan peserta dalam studi penelitian kami dan nikmati pengalaman bermain game yang luar biasa
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/game/scene/scene1"
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
             >
-              Begin Your Journey
+              Mulailah Perjalanan Anda
             </Link>
             <Link
               href="/towergames/leaderboard"
               className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold py-4 px-8 rounded-lg text-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
             >
-              View Leaderboard
+              Lihat Papan Peringkat
             </Link>
           </div>
         </div>
