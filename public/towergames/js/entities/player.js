@@ -151,7 +151,7 @@ Player.prototype._damage = function(amount){
 }
 
 Player.prototype.die = function(){
-
+	console.log('Player died - GAME OVER!');
 	GUIManager.destroy();
 	WaveManager.destroy();
 	this.game.state.states['GameOver'].win = false;

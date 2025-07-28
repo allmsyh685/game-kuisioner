@@ -88,6 +88,7 @@ WaveManager.prototype.update = function(){
 
 					if(this.currentWave == TOTAL_WAVES){
 						//WIN
+						console.log('All waves completed - WIN!');
 						GUIManager.destroy();
 						WaveManager.destroy();
 						InputManager.destroy();
@@ -100,7 +101,7 @@ WaveManager.prototype.update = function(){
 						} catch (e) { console.warn('Could not save score to localStorage', e); }
 						this.game.state.states['GameOver'].win = true;
 						this.game.state.start('GameOver');
-						window.location.href = `/game/scene/${nextScene}`;
+						// Remove the direct redirect - let GameOver state handle it
 					}
 					else{
 						this._state = this.states.PAUSED;
@@ -186,6 +187,7 @@ WaveManager.prototype.startNewWave = function(){
 
 	if(this.currentWave == this.waves.length){
 		//WIN
+		console.log('All waves completed - WIN! (startNewWave)');
 		GUIManager.destroy();
 		WaveManager.destroy();
 		InputManager.destroy();
@@ -198,7 +200,7 @@ WaveManager.prototype.startNewWave = function(){
 		} catch (e) { console.warn('Could not save score to localStorage', e); }
 		this.game.state.states['GameOver'].win = true;
 		this.game.state.start('GameOver');
-		window.location.href = `/game/scene/${nextScene}`;
+		// Remove the direct redirect - let GameOver state handle it
 	}
 	else{
 		

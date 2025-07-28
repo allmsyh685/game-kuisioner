@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import axios from 'axios';
 
@@ -70,6 +70,11 @@ const Scene: React.FC = () => {
   const [userAge, setUserAge] = useState('');
   const [userInfoSubmitted, setUserInfoSubmitted] = useState(false);
   const [loadingUserInfo, setLoadingUserInfo] = useState(true);
+  const [audioPlaying, setAudioPlaying] = useState(false);
+  const [audioLoaded, setAudioLoaded] = useState(false);
+  const [audioPaused, setAudioPaused] = useState(false);
+  const [currentAudioFile, setCurrentAudioFile] = useState<string>('');
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const frame: Scene1Frame = dialog[frameIdx];
 
   useEffect(() => {
@@ -118,7 +123,101 @@ const Scene: React.FC = () => {
     setAnswer('');
   }, [frameIdx]);
 
+  // Audio functionality
+  useEffect(() => {
+    if (frame && frame.audio && userInfoSubmitted) {
+      console.log('Loading audio for frame:', frameIdx, 'Audio path:', frame.audio);
+      
+      // Only create new audio if the audio file has changed
+      if (currentAudioFile !== frame.audio) {
+        console.log('Audio file changed, creating new audio element');
+        
+        // Stop any currently playing audio
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+        }
+
+        // Reset audio states for new audio file
+        setAudioPaused(false);
+        setAudioPlaying(false);
+        setAudioLoaded(false);
+        setCurrentAudioFile(frame.audio);
+
+        // Create new audio element
+        const audio = new Audio(frame.audio);
+        audioRef.current = audio;
+        
+        // Set up audio event listeners
+        audio.addEventListener('loadstart', () => {
+          console.log('Audio loading started');
+        });
+        
+        audio.addEventListener('canplaythrough', () => {
+          console.log('Audio can play through');
+          setAudioLoaded(true);
+          // Auto-play audio for new audio file unless manually paused
+          if (!audioPaused) {
+            audio.play().catch(error => {
+              console.log('Audio autoplay failed (this is normal due to browser restrictions):', error);
+            });
+            setAudioPlaying(true);
+          }
+        });
+        
+        audio.addEventListener('play', () => {
+          setAudioPlaying(true);
+        });
+        
+        audio.addEventListener('pause', () => {
+          setAudioPlaying(false);
+        });
+        
+        audio.addEventListener('ended', () => {
+          setAudioPlaying(false);
+        });
+        
+        audio.addEventListener('error', (error) => {
+          console.error('Audio error:', error);
+          setAudioPlaying(false);
+        });
+
+        // Load the audio
+        audio.load();
+      } else {
+        console.log('Same audio file, continuing playback');
+        // Same audio file, just resume if it was playing
+        if (audioRef.current && !audioPaused && !audioPlaying) {
+          audioRef.current.play().catch(error => {
+            console.log('Error resuming audio:', error);
+          });
+          setAudioPlaying(true);
+        }
+      }
+    }
+
+    // Cleanup function
+    return () => {
+      // Don't cleanup audio on frame change, only on component unmount
+    };
+  }, [frameIdx, frame, userInfoSubmitted, audioPaused, currentAudioFile]);
+
+  // Cleanup audio when component unmounts
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      setAudioPlaying(false);
+      setAudioLoaded(false);
+      setAudioPaused(false);
+    };
+  }, []);
+
   const handleNext = (selectedAnswer?: string) => {
+    // Don't stop audio when navigating - let it continue if same audio file
+    
     if (frame.questionId && question) {
       const answerToSave = selectedAnswer !== undefined ? selectedAnswer : answer;
       setAnswers(prev => {
@@ -152,7 +251,26 @@ const Scene: React.FC = () => {
   };
 
   const handlePrev = () => {
+    // Don't stop audio when navigating - let it continue if same audio file
     setFrameIdx(idx => Math.max(idx - 1, 0));
+  };
+
+  const handleAudioToggle = () => {
+    if (audioRef.current) {
+      if (audioPlaying) {
+        // Stop/pause audio
+        audioRef.current.pause();
+        setAudioPlaying(false);
+        setAudioPaused(true);
+      } else {
+        // Resume audio
+        audioRef.current.play().catch(error => {
+          console.error('Error playing audio:', error);
+        });
+        setAudioPlaying(true);
+        setAudioPaused(false);
+      }
+    }
   };
 
   // Fungsi untuk submit ke API di frame terakhir
@@ -360,6 +478,13 @@ const Scene: React.FC = () => {
                       style={{ width: `${((frameIdx + 1) / dialog.length) * 100}%` }}
                     ></div>
                   </div>
+                  {frame.audio && (
+                    <div className="flex justify-center mt-2">
+                      <span className="text-xs text-gray-400">
+                        {!audioLoaded ? '🔄 Loading audio...' : audioPlaying ? '🔊 Audio playing...' : audioPaused ? '⏸️ Audio paused' : '🔊 Audio ready'}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Question Frame */}
@@ -431,6 +556,19 @@ const Scene: React.FC = () => {
                   </div>
                 )}
                 
+                {/* Audio Controls */}
+                {frame.audio && (
+                  <div className="flex justify-center mb-4">
+                    <button
+                      onClick={handleAudioToggle}
+                      className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
+                      disabled={!audioLoaded}
+                    >
+                      {!audioLoaded ? '🔄 Loading Audio...' : audioPlaying ? '⏸️ Stop Audio' : '▶️ Resume Audio'}
+                    </button>
+                  </div>
+                )}
+
                 {/* Navigation Buttons */}
                 <div className="flex justify-between w-full max-w-xl mx-auto gap-4">
                   <button
