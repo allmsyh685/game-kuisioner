@@ -1,14 +1,14 @@
 'use client'
 import React, { useEffect, useState, useRef } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import axios from 'axios';
 
 // Dynamic dialog import helper
-const dialogMap: Record<string, unknown> = {
-  scene1: require('../../scene1Dialog').scene1Dialog,
-  scene2: require('../../scene2Dialog').scene2Dialog,
-  scene3: require('../../scene3Dialog').scene3Dialog,
-  scene4: require('../../scene4Dialog').scene4Dialog,
+const dialogMap: Record<string, Scene1Frame[]> = {
+  scene1: require('../../scene1Dialog').scene1Dialog as Scene1Frame[],
+  scene2: require('../../scene2Dialog').scene2Dialog as Scene1Frame[],
+  scene3: require('../../scene3Dialog').scene3Dialog as Scene1Frame[],
+  scene4: require('../../scene4Dialog').scene4Dialog as Scene1Frame[],
   // Add more scenes as needed
 };
 
@@ -51,17 +51,11 @@ function getIdentifikasiText(userName: string, userAge: string, userLocation: st
 const Scene: React.FC = () => {
   const params = useParams();
   const slug = params?.slug as string || 'scene1';
-  const dialog = dialogMap[slug] || dialogMap['scene1'];
+  const dialog: Scene1Frame[] = dialogMap[slug] || dialogMap['scene1'];
   const [frameIdx, setFrameIdx] = useState(0);
   const [question, setQuestion] = useState<Question | null>(null);
   const [answer, setAnswer] = useState<string>('');
-  const [answers, setAnswers] = useState<{ [key: number]: string }>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(`${slug}Answers`);
-      return saved ? JSON.parse(saved) : {};
-    }
-    return {};
-  });
+
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [userName, setUserName] = useState('');
@@ -95,7 +89,7 @@ const Scene: React.FC = () => {
       setLoading(true);
       axios.get(`${API_BASE}/questions`)
         .then(res => {
-          let q = res.data.data.find((q: any) => Number(q.id) === Number(frame.questionId));
+          let q = res.data.data.find((q: unknown) => Number((q as { id: number }).id) === Number(frame.questionId));
           if (q) {
             // mapping field agar frontend dapat .text, .type, .options
             q = {
@@ -219,13 +213,12 @@ const Scene: React.FC = () => {
     
     if (frame.questionId && question) {
       const answerToSave = selectedAnswer !== undefined ? selectedAnswer : answer;
-      setAnswers(prev => {
-        const updated = { ...prev, [question.id]: answerToSave };
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(`${slug}Answers`, JSON.stringify(updated));
-        }
-        return updated;
-      });
+      // Save answer to localStorage
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem(`${slug}Answers`) || '{}';
+        const updated = { ...JSON.parse(saved), [question.id]: answerToSave };
+        localStorage.setItem(`${slug}Answers`, JSON.stringify(updated));
+      }
       setSubmitted(true);
       setTimeout(() => {
         setSubmitted(false);
