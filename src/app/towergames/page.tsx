@@ -1,10 +1,10 @@
 'use client'
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import Script from 'next/script';
 import { useSearchParams } from 'next/navigation';
 import '../../../public/towergames/css/main.css';
 
-export default function TowerGamesPage() {
+function TowerGamesContent() {
   const searchParams = useSearchParams();
   
   useEffect(() => {
@@ -60,9 +60,9 @@ export default function TowerGamesPage() {
           const mobileControls = document.getElementById('mobile-controls');
           if (mobileControls) {
             mobileControls.style.display = 'block';
-                      if (typeof (window as unknown).setupMobileControls === 'function') {
-            (window as unknown).setupMobileControls();
-          }
+            if (typeof (window as any).setupMobileControls === 'function') {
+              (window as any).setupMobileControls();
+            }
           }
         }}
       >
@@ -101,4 +101,12 @@ export default function TowerGamesPage() {
       <Script src="/towergames/js/main.js" strategy="afterInteractive" />
     </>
   );
-} 
+}
+
+export default function TowerGamesPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <TowerGamesContent />
+    </Suspense>
+  );
+}
