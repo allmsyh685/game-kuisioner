@@ -56,7 +56,7 @@ export const getStatistics = async (): Promise<Statistics> => {
   return response.data.data;
 };
 
-export const exportResponses = async (): Promise<any[][]> => {
-  const response = await api.get<ApiResponse<any[][]>>('/admin/responses/export');
+export const exportResponses = async (): Promise<unknown[][]> => {
+  const response = await api.get<ApiResponse<unknown[][]>>('/admin/responses/export');
   return response.data.data;
 }; 

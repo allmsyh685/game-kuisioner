@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Image from "next/image";
+import Link from "next/link";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -38,18 +39,18 @@ const Navbar = () => {
         {/* Center - Navigation Links */}
         <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2">
           <div className="flex items-baseline space-x-4">
-            <a
+            <Link
               href="/"
               className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
             >
               Home
-            </a>
-            <a
+            </Link>
+            <Link
               href="/game/scene/scene1"
               className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
             >
               Start Survey
-            </a>
+            </Link>
             <a
               href="/towergames"
               className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
@@ -94,18 +95,18 @@ const Navbar = () => {
       {/* Mobile menu */}
       <div className="md:hidden hidden">
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-blue-900">
-          <a
+          <Link
             href="/"
             className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
           >
             Home
-          </a>
-          <a
-            href="/game/scene/scene1"
-            className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-          >
-            Start Survey
-          </a>
+          </Link>
+                      <Link
+              href="/game/scene/scene1"
+              className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+            >
+              Start Survey
+            </Link>
           <a
             href="/towergames"
             className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"

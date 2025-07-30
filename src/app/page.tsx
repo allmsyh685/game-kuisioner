@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Users, FileText, BarChart3, Gamepad2 } from 'lucide-react';
+
 
 export default function Home() {
   const [carouselIndex, setCarouselIndex] = useState(0);
@@ -103,7 +103,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 mt-8 mb-8 md:mt-0 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              What You'll Experience
+              What You&apos;ll Experience
             </h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
               A unique combination of research and gaming that helps us understand AI usage patterns

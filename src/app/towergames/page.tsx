@@ -60,9 +60,9 @@ export default function TowerGamesPage() {
           const mobileControls = document.getElementById('mobile-controls');
           if (mobileControls) {
             mobileControls.style.display = 'block';
-            if (typeof (window as any).setupMobileControls === 'function') {
-              (window as any).setupMobileControls();
-            }
+                      if (typeof (window as unknown).setupMobileControls === 'function') {
+            (window as unknown).setupMobileControls();
+          }
           }
         }}
       >

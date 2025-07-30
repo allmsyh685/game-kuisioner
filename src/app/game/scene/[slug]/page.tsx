@@ -4,7 +4,7 @@ import { useRouter, useParams } from 'next/navigation';
 import axios from 'axios';
 
 // Dynamic dialog import helper
-const dialogMap: Record<string, any> = {
+const dialogMap: Record<string, unknown> = {
   scene1: require('../../scene1Dialog').scene1Dialog,
   scene2: require('../../scene2Dialog').scene2Dialog,
   scene3: require('../../scene3Dialog').scene3Dialog,
@@ -34,7 +34,7 @@ interface Scene1Frame {
 
 const API_BASE = 'https://questionnaireapi-production.up.railway.app/api';
 
-function getIdentifikasiText(userName: string, userAge: string, userLocation: string, lastEducation: string) {
+function getIdentifikasiText(userName: string, userAge: string, userLocation: string) {
   return (
     <span className="text-green-400">
       E.V.I :<br />identifikasi pengguna :<br />
@@ -49,7 +49,6 @@ function getIdentifikasiText(userName: string, userAge: string, userLocation: st
 }
 
 const Scene: React.FC = () => {
-  const router = useRouter();
   const params = useParams();
   const slug = params?.slug as string || 'scene1';
   const dialog = dialogMap[slug] || dialogMap['scene1'];
@@ -549,8 +548,7 @@ const Scene: React.FC = () => {
                       ? getIdentifikasiText(
                           userName,
                           userAge,
-                          userLocation,
-                          (typeof window !== 'undefined' ? JSON.parse(localStorage.getItem(`${slug}Answers`) || '{}')[1] : '') || '-'
+                          userLocation
                         )
                       : frame.text}
                   </div>

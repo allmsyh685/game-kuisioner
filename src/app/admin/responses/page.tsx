@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Response } from '@/types';
 import { getResponses } from '@/lib/api';
-import { Eye, Download } from 'lucide-react';
+import { Eye } from 'lucide-react';
 
 export default function ResponsesPage() {
   const [responses, setResponses] = useState<Response[]>([]);

@@ -56,4 +56,6 @@ export interface CreateQuestionData {
   is_active?: boolean;
 }
 
-export interface UpdateQuestionData extends Partial<CreateQuestionData> {} 
+export interface UpdateQuestionData extends Partial<CreateQuestionData> {
+  // Extends all properties from CreateQuestionData as optional
+} 

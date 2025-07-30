@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Question, CreateQuestionData } from '@/types';
 import { getAdminQuestions, createQuestion, updateQuestion, deleteQuestion } from '@/lib/api';
-import { Plus, Edit, Trash2, Eye } from 'lucide-react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 
 export default function QuestionsPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
