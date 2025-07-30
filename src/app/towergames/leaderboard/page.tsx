@@ -9,7 +9,7 @@ interface Score {
   created_at: string;
 }
 
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = 'https://questionnaireapi-production.up.railway.app/api';
 
 const Leaderboard: React.FC = () => {
   const [scores, setScores] = useState<Score[]>([]);

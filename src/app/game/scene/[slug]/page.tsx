@@ -32,7 +32,7 @@ interface Scene1Frame {
   waves?: number;
 }
 
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = 'https://questionnaireapi-production.up.railway.app/api';
 
 function getIdentifikasiText(userName: string, userAge: string, userLocation: string, lastEducation: string) {
   return (
