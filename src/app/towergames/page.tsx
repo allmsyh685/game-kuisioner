@@ -68,23 +68,70 @@ function TowerGamesContent() {
       >
         Show Mobile Controls
       </button>
-      <Script src="https://cdn.jsdelivr.net/npm/nipplejs@0.9.0/dist/nipplejs.min.js" strategy="beforeInteractive" />
-      {/* Load all scripts in the order from index.html */}
-      <Script src="/towergames/js/lib/phaser-new.js" strategy="beforeInteractive" />
-      <Script src="/towergames/js/lib/phaser.patch.js" strategy="beforeInteractive" />
+      
+      {/* Load Phaser first - this must be loaded before any other scripts */}
+      <Script 
+        src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js" 
+        strategy="beforeInteractive"
+        onLoad={() => {
+          console.log('Phaser loaded successfully');
+          // Ensure Phaser is available globally
+          if (typeof window !== 'undefined' && (window as any).Phaser) {
+            console.log('Phaser is available globally');
+          }
+        }}
+      />
+      
+      {/* Ensure Phaser is attached to window */}
+      <Script 
+        id="ensure-phaser-global"
+        strategy="beforeInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            // Ensure Phaser is available globally
+            if (typeof Phaser !== 'undefined') {
+              window.Phaser = Phaser;
+              console.log('Phaser attached to window');
+            } else {
+              console.error('Phaser is not defined');
+            }
+          `
+        }}
+      />
+      
+      {/* Load nipplejs for mobile controls */}
+      <Script 
+        src="https://cdn.jsdelivr.net/npm/nipplejs@0.9.0/dist/nipplejs.min.js" 
+        strategy="beforeInteractive" 
+      />
+      
+      {/* Load all game scripts in the correct order */}
+      <Script 
+        src="/towergames/js/lib/phaser.patch.js" 
+        strategy="afterInteractive"
+        onLoad={() => console.log('Phaser patch loaded')}
+      />
+      
+      {/* Load game states FIRST - these define MainGame */}
       <Script src="/towergames/js/states/bootstate.js" strategy="afterInteractive" />
       <Script src="/towergames/js/states/loaderstate.js" strategy="afterInteractive" />
       <Script src="/towergames/js/states/mainmenustate.js" strategy="afterInteractive" />
       <Script src="/towergames/js/states/gamestate.js" strategy="afterInteractive" />
       <Script src="/towergames/js/states/gameoverstate.js" strategy="afterInteractive" />
+      
+      {/* Load game resources and utilities */}
       <Script src="/towergames/js/resources.js" strategy="afterInteractive" />
       <Script src="/towergames/js/waves.js" strategy="afterInteractive" />
       <Script src="/towergames/js/points.js" strategy="afterInteractive" />
+      
+      {/* Load managers */}
       <Script src="/towergames/js/managers/collisionmanager.js" strategy="afterInteractive" />
       <Script src="/towergames/js/managers/inputmanager.js" strategy="afterInteractive" />
       <Script src="/towergames/js/managers/inventorymanager.js" strategy="afterInteractive" />
       <Script src="/towergames/js/managers/guimanager.js" strategy="afterInteractive" />
       <Script src="/towergames/js/managers/wavemanager.js" strategy="afterInteractive" />
+      
+      {/* Load entities */}
       <Script src="/towergames/js/entities/player.js" strategy="afterInteractive" />
       <Script src="/towergames/js/entities/bullet.js" strategy="afterInteractive" />
       <Script src="/towergames/js/entities/bear.js" strategy="afterInteractive" />
@@ -94,11 +141,66 @@ function TowerGamesContent() {
       <Script src="/towergames/js/entities/mine.js" strategy="afterInteractive" />
       <Script src="/towergames/js/entities/tooth.js" strategy="afterInteractive" />
       <Script src="/towergames/js/entities/explosion.js" strategy="afterInteractive" />
+      
+      {/* Load GUI components */}
       <Script src="/towergames/js/gui/toolbar.js" strategy="afterInteractive" />
       <Script src="/towergames/js/gui/toolbar_slot.js" strategy="afterInteractive" />
       <Script src="/towergames/js/gui/hud.js" strategy="afterInteractive" />
       <Script src="/towergames/js/gui/menuscreen.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/main.js" strategy="afterInteractive" />
+      
+      {/* Ensure MainGame is attached to window after all state files are loaded */}
+      <Script 
+        id="ensure-main-game-global"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            // Ensure MainGame is available globally
+            if (typeof MainGame !== 'undefined') {
+              window.MainGame = MainGame;
+              console.log('MainGame attached to window');
+            } else {
+              console.error('MainGame is not defined');
+            }
+          `
+        }}
+      />
+      
+      {/* Load main game script LAST - after all dependencies are loaded */}
+      <Script 
+        src="/towergames/js/main.js" 
+        strategy="afterInteractive"
+        onLoad={() => {
+          console.log('Main game script loaded');
+          // Ensure MainGame is available globally
+          if (typeof window !== 'undefined' && (window as any).MainGame) {
+            console.log('MainGame is available globally');
+            console.log('Game initialization should start now...');
+          } else {
+            console.error('MainGame is not available globally');
+            console.error('This means the state files did not load properly');
+          }
+        }}
+        onError={(e) => {
+          console.error('Failed to load main.js:', e);
+        }}
+      />
+      
+      {/* Debug script to check all dependencies */}
+      <Script 
+        id="debug-dependencies"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            setTimeout(() => {
+              console.log('=== DEPENDENCY CHECK ===');
+              console.log('Phaser available:', typeof window.Phaser !== 'undefined');
+              console.log('MainGame available:', typeof window.MainGame !== 'undefined');
+              console.log('Game object available:', typeof window.game !== 'undefined');
+              console.log('=======================');
+            }, 1000);
+          `
+        }}
+      />
     </>
   );
 }
