@@ -1,11 +1,22 @@
 'use client'
-import React, { useEffect, Suspense } from 'react';
+import React, { useEffect, Suspense, useState } from 'react';
 import Script from 'next/script';
 import { useSearchParams } from 'next/navigation';
 import '../../../public/towergames/css/main.css';
 
 function TowerGamesContent() {
   const searchParams = useSearchParams();
+  const [scriptsLoaded, setScriptsLoaded] = useState({
+    phaser: false,
+    nipplejs: false,
+    patch: false,
+    states: false,
+    resources: false,
+    managers: false,
+    entities: false,
+    gui: false,
+    main: false
+  });
   
   useEffect(() => {
     // Remove any scroll, margin, padding for fullscreen
@@ -30,6 +41,123 @@ function TowerGamesContent() {
       document.body.style.padding = '';
     };
   }, [searchParams]);
+
+  // Function to load scripts sequentially
+  const loadScriptSequentially = (src: string, id: string) => {
+    return new Promise<void>((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.id = id;
+      script.onload = () => {
+        console.log(`Loaded: ${src}`);
+        resolve();
+      };
+      script.onerror = () => {
+        console.error(`Failed to load: ${src}`);
+        reject();
+      };
+      document.head.appendChild(script);
+    });
+  };
+
+  // Load all scripts when component mounts
+  useEffect(() => {
+    const loadAllScripts = async () => {
+      try {
+        console.log('Starting sequential script loading...');
+        
+        // 1. Load Phaser first
+        await loadScriptSequentially('/towergames/js/lib/phaser.min.js', 'phaser-script');
+        setScriptsLoaded(prev => ({ ...prev, phaser: true }));
+        
+        // Small delay to ensure Phaser is properly attached to global scope
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Ensure Phaser is global
+        if (typeof window !== 'undefined' && (window as any).Phaser) {
+          console.log('Phaser loaded and available globally');
+        } else {
+          console.error('Phaser not available globally after loading');
+        }
+        
+        // 2. Load nipplejs
+        await loadScriptSequentially('https://cdn.jsdelivr.net/npm/nipplejs@0.9.0/dist/nipplejs.min.js', 'nipplejs-script');
+        setScriptsLoaded(prev => ({ ...prev, nipplejs: true }));
+        
+        // 3. Load phaser patch
+        await loadScriptSequentially('/towergames/js/lib/phaser.patch.js', 'phaser-patch-script');
+        setScriptsLoaded(prev => ({ ...prev, patch: true }));
+        
+        // 4. Load state files (these define MainGame)
+        await loadScriptSequentially('/towergames/js/states/bootstate.js', 'bootstate-script');
+        await loadScriptSequentially('/towergames/js/states/loaderstate.js', 'loaderstate-script');
+        await loadScriptSequentially('/towergames/js/states/mainmenustate.js', 'mainmenustate-script');
+        await loadScriptSequentially('/towergames/js/states/gamestate.js', 'gamestate-script');
+        await loadScriptSequentially('/towergames/js/states/gameoverstate.js', 'gameoverstate-script');
+        setScriptsLoaded(prev => ({ ...prev, states: true }));
+        
+        // Ensure MainGame is global
+        if (typeof window !== 'undefined' && (window as any).MainGame) {
+          console.log('MainGame loaded and available globally');
+        } else {
+          console.error('MainGame not available globally after loading states');
+        }
+        
+        // 5. Load resources and utilities
+        await loadScriptSequentially('/towergames/js/resources.js', 'resources-script');
+        await loadScriptSequentially('/towergames/js/waves.js', 'waves-script');
+        await loadScriptSequentially('/towergames/js/points.js', 'points-script');
+        setScriptsLoaded(prev => ({ ...prev, resources: true }));
+        
+        // 6. Load managers
+        await loadScriptSequentially('/towergames/js/managers/collisionmanager.js', 'collisionmanager-script');
+        await loadScriptSequentially('/towergames/js/managers/inputmanager.js', 'inputmanager-script');
+        await loadScriptSequentially('/towergames/js/managers/inventorymanager.js', 'inventorymanager-script');
+        await loadScriptSequentially('/towergames/js/managers/guimanager.js', 'guimanager-script');
+        await loadScriptSequentially('/towergames/js/managers/wavemanager.js', 'wavemanager-script');
+        setScriptsLoaded(prev => ({ ...prev, managers: true }));
+        
+        // 7. Load entities
+        await loadScriptSequentially('/towergames/js/entities/player.js', 'player-script');
+        await loadScriptSequentially('/towergames/js/entities/bullet.js', 'bullet-script');
+        await loadScriptSequentially('/towergames/js/entities/bear.js', 'bear-script');
+        await loadScriptSequentially('/towergames/js/entities/cane.js', 'cane-script');
+        await loadScriptSequentially('/towergames/js/entities/corn.js', 'corn-script');
+        await loadScriptSequentially('/towergames/js/entities/turret.js', 'turret-script');
+        await loadScriptSequentially('/towergames/js/entities/mine.js', 'mine-script');
+        await loadScriptSequentially('/towergames/js/entities/tooth.js', 'tooth-script');
+        await loadScriptSequentially('/towergames/js/entities/explosion.js', 'explosion-script');
+        setScriptsLoaded(prev => ({ ...prev, entities: true }));
+        
+        // 8. Load GUI components
+        await loadScriptSequentially('/towergames/js/gui/toolbar.js', 'toolbar-script');
+        await loadScriptSequentially('/towergames/js/gui/toolbar_slot.js', 'toolbar-slot-script');
+        await loadScriptSequentially('/towergames/js/gui/hud.js', 'hud-script');
+        await loadScriptSequentially('/towergames/js/gui/menuscreen.js', 'menuscreen-script');
+        setScriptsLoaded(prev => ({ ...prev, gui: true }));
+        
+        // 9. Load main game script last
+        await loadScriptSequentially('/towergames/js/main.js', 'main-script');
+        setScriptsLoaded(prev => ({ ...prev, main: true }));
+        
+        console.log('All scripts loaded successfully!');
+        
+        // Final check
+        setTimeout(() => {
+          console.log('=== FINAL DEPENDENCY CHECK ===');
+          console.log('Phaser available:', typeof (window as any).Phaser !== 'undefined');
+          console.log('MainGame available:', typeof (window as any).MainGame !== 'undefined');
+          console.log('Game object available:', typeof (window as any).game !== 'undefined');
+          console.log('================================');
+        }, 1000);
+        
+      } catch (error) {
+        console.error('Error loading scripts:', error);
+      }
+    };
+
+    loadAllScripts();
+  }, []);
 
   return (
     <>
@@ -69,138 +197,32 @@ function TowerGamesContent() {
         Show Mobile Controls
       </button>
       
-      {/* Load Phaser first - this must be loaded before any other scripts */}
-      <Script 
-        src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js" 
-        strategy="beforeInteractive"
-        onLoad={() => {
-          console.log('Phaser loaded successfully');
-          // Ensure Phaser is available globally
-          if (typeof window !== 'undefined' && (window as any).Phaser) {
-            console.log('Phaser is available globally');
-          }
-        }}
-      />
-      
-      {/* Ensure Phaser is attached to window */}
-      <Script 
-        id="ensure-phaser-global"
-        strategy="beforeInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            // Ensure Phaser is available globally
-            if (typeof Phaser !== 'undefined') {
-              window.Phaser = Phaser;
-              console.log('Phaser attached to window');
-            } else {
-              console.error('Phaser is not defined');
-            }
-          `
-        }}
-      />
-      
-      {/* Load nipplejs for mobile controls */}
-      <Script 
-        src="https://cdn.jsdelivr.net/npm/nipplejs@0.9.0/dist/nipplejs.min.js" 
-        strategy="beforeInteractive" 
-      />
-      
-      {/* Load all game scripts in the correct order */}
-      <Script 
-        src="/towergames/js/lib/phaser.patch.js" 
-        strategy="afterInteractive"
-        onLoad={() => console.log('Phaser patch loaded')}
-      />
-      
-      {/* Load game states FIRST - these define MainGame */}
-      <Script src="/towergames/js/states/bootstate.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/states/loaderstate.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/states/mainmenustate.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/states/gamestate.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/states/gameoverstate.js" strategy="afterInteractive" />
-      
-      {/* Load game resources and utilities */}
-      <Script src="/towergames/js/resources.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/waves.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/points.js" strategy="afterInteractive" />
-      
-      {/* Load managers */}
-      <Script src="/towergames/js/managers/collisionmanager.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/managers/inputmanager.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/managers/inventorymanager.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/managers/guimanager.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/managers/wavemanager.js" strategy="afterInteractive" />
-      
-      {/* Load entities */}
-      <Script src="/towergames/js/entities/player.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/entities/bullet.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/entities/bear.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/entities/cane.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/entities/corn.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/entities/turret.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/entities/mine.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/entities/tooth.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/entities/explosion.js" strategy="afterInteractive" />
-      
-      {/* Load GUI components */}
-      <Script src="/towergames/js/gui/toolbar.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/gui/toolbar_slot.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/gui/hud.js" strategy="afterInteractive" />
-      <Script src="/towergames/js/gui/menuscreen.js" strategy="afterInteractive" />
-      
-      {/* Ensure MainGame is attached to window after all state files are loaded */}
-      <Script 
-        id="ensure-main-game-global"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            // Ensure MainGame is available globally
-            if (typeof MainGame !== 'undefined') {
-              window.MainGame = MainGame;
-              console.log('MainGame attached to window');
-            } else {
-              console.error('MainGame is not defined');
-            }
-          `
-        }}
-      />
-      
-      {/* Load main game script LAST - after all dependencies are loaded */}
-      <Script 
-        src="/towergames/js/main.js" 
-        strategy="afterInteractive"
-        onLoad={() => {
-          console.log('Main game script loaded');
-          // Ensure MainGame is available globally
-          if (typeof window !== 'undefined' && (window as any).MainGame) {
-            console.log('MainGame is available globally');
-            console.log('Game initialization should start now...');
-          } else {
-            console.error('MainGame is not available globally');
-            console.error('This means the state files did not load properly');
-          }
-        }}
-        onError={(e) => {
-          console.error('Failed to load main.js:', e);
-        }}
-      />
-      
-      {/* Debug script to check all dependencies */}
-      <Script 
-        id="debug-dependencies"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            setTimeout(() => {
-              console.log('=== DEPENDENCY CHECK ===');
-              console.log('Phaser available:', typeof window.Phaser !== 'undefined');
-              console.log('MainGame available:', typeof window.MainGame !== 'undefined');
-              console.log('Game object available:', typeof window.game !== 'undefined');
-              console.log('=======================');
-            }, 1000);
-          `
-        }}
-      />
+      {/* Loading indicator */}
+      {!scriptsLoaded.main && (
+        <div style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 3000,
+          background: 'rgba(0,0,0,0.8)',
+          color: 'white',
+          padding: '20px',
+          borderRadius: '10px',
+          textAlign: 'center'
+        }}>
+          <div>Loading Tower Defense Game...</div>
+          <div style={{ marginTop: '10px', fontSize: '12px' }}>
+            {scriptsLoaded.phaser && '✓ Phaser Loaded'}<br/>
+            {scriptsLoaded.states && '✓ Game States Loaded'}<br/>
+            {scriptsLoaded.resources && '✓ Resources Loaded'}<br/>
+            {scriptsLoaded.managers && '✓ Managers Loaded'}<br/>
+            {scriptsLoaded.entities && '✓ Entities Loaded'}<br/>
+            {scriptsLoaded.gui && '✓ GUI Loaded'}<br/>
+            {scriptsLoaded.main && '✓ Main Game Loaded'}
+          </div>
+        </div>
+      )}
     </>
   );
 }
