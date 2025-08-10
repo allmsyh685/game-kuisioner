@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Response } from '@/types';
 import { getResponses } from '@/lib/api';
 import { Eye } from 'lucide-react';
+import AdminProtected from '@/components/ui/AdminProtected';
 
 export default function ResponsesPage() {
   const [responses, setResponses] = useState<Response[]>([]);
@@ -43,29 +44,27 @@ export default function ResponsesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <AdminProtected title="Responses Survey" description="Lihat semua jawaban dari responden">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Memuat responses...</p>
         </div>
-      </div>
+      </AdminProtected>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Responses Survey</h1>
-            <p className="text-gray-600">Lihat semua jawaban dari responden</p>
-          </div>
+    <AdminProtected title="Responses Survey" description="Lihat semua jawaban dari responden">
+      <div className="space-y-6">
+        {/* Header with Total Count */}
+        <div className="flex justify-between items-center">
           <div className="text-right">
             <p className="text-sm text-gray-600">Total Responses</p>
             <p className="text-2xl font-bold text-gray-900">{responses.length}</p>
           </div>
         </div>
 
+        {/* Responses Table */}
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -250,6 +249,6 @@ export default function ResponsesPage() {
           </div>
         )}
       </div>
-    </div>
+    </AdminProtected>
   );
 } 

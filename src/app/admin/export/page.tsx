@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { exportResponses } from '@/lib/api';
 import { Download, FileText, Users } from 'lucide-react';
+import AdminProtected from '@/components/ui/AdminProtected';
 
 export default function ExportPage() {
   const [exporting, setExporting] = useState(false);
@@ -36,13 +37,8 @@ export default function ExportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Export Data</h1>
-          <p className="text-gray-600">Download semua data responses dalam format CSV</p>
-        </div>
-
+    <AdminProtected title="Export Data" description="Download semua data responses dalam format CSV">
+      <div className="space-y-6">
         <div className="bg-white rounded-xl shadow-sm p-8">
           <div className="text-center">
             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -71,7 +67,7 @@ export default function ExportPage() {
                 </>
               ) : (
                 <>
-                  <Download className="w-4 h-4 mr-2" />
+                  <Download className="w-4 h-8" />
                   Download CSV
                 </>
               )}
@@ -97,18 +93,8 @@ export default function ExportPage() {
               <p className="text-sm text-gray-600">Proses export yang cepat</p>
             </div>
           </div>
-
-          <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-            <h3 className="font-medium text-blue-900 mb-2">Informasi File CSV</h3>
-            <ul className="text-sm text-blue-800 space-y-1">
-              <li>• File akan berisi semua kolom data responses</li>
-              <li>• Format tanggal: YYYY-MM-DD HH:MM:SS</li>
-              <li>• Encoding: UTF-8</li>
-              <li>• Nama file: questionnaire_responses_YYYY-MM-DD.csv</li>
-            </ul>
-          </div>
         </div>
       </div>
-    </div>
+    </AdminProtected>
   );
 } 

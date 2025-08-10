@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Question, CreateQuestionData } from '@/types';
 import { getAdminQuestions, createQuestion, updateQuestion, deleteQuestion } from '@/lib/api';
 import { Plus, Edit, Trash2 } from 'lucide-react';
+import AdminProtected from '@/components/ui/AdminProtected';
 
 export default function QuestionsPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -105,127 +106,107 @@ export default function QuestionsPage() {
     }));
   };
 
+  const updateOrder = (value: string) => {
+    const order = parseInt(value);
+    if (!isNaN(order) && order > 0) {
+      setFormData(prev => ({ ...prev, order }));
+    }
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <AdminProtected title="Kelola Pertanyaan" description="Tambah, edit, atau hapus pertanyaan survey">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Memuat pertanyaan...</p>
         </div>
-      </div>
+      </AdminProtected>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Kelola Pertanyaan</h1>
-            <p className="text-gray-600">Tambah, edit, atau hapus pertanyaan survey</p>
-          </div>
+    <AdminProtected title="Kelola Pertanyaan" description="Tambah, edit, atau hapus pertanyaan survey">
+      <div className="space-y-6">
+        {/* Add Question Button */}
+        <div className="flex justify-end">
           <button
-            onClick={() => {
-              setEditingQuestion(null);
-              resetForm();
-              setShowModal(true);
-            }}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+            onClick={() => setShowModal(true)}
+            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
           >
             <Plus className="w-4 h-4 mr-2" />
             Tambah Pertanyaan
           </button>
         </div>
 
+        {/* Questions List */}
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    No
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Pertanyaan
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Opsi
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Aksi
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {questions.map((question, index) => (
-                  <tr key={question.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {index + 1}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900 max-w-md">
-                      {question.question_text}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      <div className="space-y-1">
-                        {question.options.slice(0, 2).map((option, i) => (
-                          <div key={i} className="text-xs bg-gray-100 px-2 py-1 rounded">
-                            {option}
-                          </div>
-                        ))}
-                        {question.options.length > 2 && (
-                          <div className="text-xs text-gray-400">
-                            +{question.options.length - 2} opsi lainnya
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        question.is_active
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900">Daftar Pertanyaan</h2>
+          </div>
+          <div className="divide-y divide-gray-200">
+            {questions.map((question) => (
+              <div key={question.id} className="px-6 py-4 hover:bg-gray-50">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        #{question.order}
+                      </span>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        question.is_active 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-gray-100 text-gray-800'
                       }`}>
                         {question.is_active ? 'Aktif' : 'Nonaktif'}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                      <button
-                        onClick={() => handleEdit(question)}
-                        className="text-blue-600 hover:text-blue-900"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(question.id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-3">{question.question_text}</h3>
+                    <div className="space-y-2">
+                      {question.options.map((option, index) => (
+                        <div key={index} className="flex items-center space-x-2">
+                          <div className="w-4 h-4 border-2 border-gray-300 rounded"></div>
+                          <span className="text-gray-700">{option}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex space-x-2 ml-4">
+                    <button
+                      onClick={() => handleEdit(question)}
+                      className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors duration-200"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(question.id)}
+                      className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors duration-200"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Modal */}
+        {/* Add/Edit Question Modal */}
         {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                {editingQuestion ? 'Edit Pertanyaan' : 'Tambah Pertanyaan Baru'}
-              </h2>
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {editingQuestion ? 'Edit Pertanyaan' : 'Tambah Pertanyaan Baru'}
+                </h2>
+              </div>
               
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="p-6 space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Pertanyaan *
+                  <label htmlFor="question_text" className="block text-sm font-medium text-gray-700 mb-2">
+                    Pertanyaan
                   </label>
                   <textarea
+                    id="question_text"
                     value={formData.question_text}
                     onChange={(e) => setFormData(prev => ({ ...prev, question_text: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -235,12 +216,27 @@ export default function QuestionsPage() {
                 </div>
 
                 <div>
+                  <label htmlFor="order" className="block text-sm font-medium text-gray-700 mb-2">
+                    Urutan
+                  </label>
+                  <input
+                    id="order"
+                    type="number"
+                    value={formData.order}
+                    onChange={(e) => updateOrder(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    min="1"
+                    required
+                  />
+                </div>
+
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Opsi Jawaban *
+                    Opsi Jawaban
                   </label>
                   <div className="space-y-2">
                     {formData.options.map((option, index) => (
-                      <div key={index} className="flex items-center space-x-2">
+                      <div key={index} className="flex space-x-2">
                         <input
                           type="text"
                           value={option}
@@ -253,50 +249,34 @@ export default function QuestionsPage() {
                           <button
                             type="button"
                             onClick={() => removeOption(index)}
-                            className="text-red-600 hover:text-red-800"
+                            className="px-3 py-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors duration-200"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            Hapus
                           </button>
                         )}
                       </div>
                     ))}
-                    <button
-                      type="button"
-                      onClick={addOption}
-                      className="text-blue-600 hover:text-blue-800 text-sm"
-                    >
-                      + Tambah Opsi
-                    </button>
                   </div>
+                  <button
+                    type="button"
+                    onClick={addOption}
+                    className="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    + Tambah Opsi
+                  </button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Urutan *
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.order}
-                      onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      min="1"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Status
-                    </label>
-                    <select
-                      value={formData.is_active ? 'true' : 'false'}
-                      onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.value === 'true' }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="true">Aktif</option>
-                      <option value="false">Nonaktif</option>
-                    </select>
-                  </div>
+                <div className="flex items-center">
+                  <input
+                    id="is_active"
+                    type="checkbox"
+                    checked={formData.is_active}
+                    onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.checked }))}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label htmlFor="is_active" className="ml-2 text-sm text-gray-700">
+                    Pertanyaan aktif
+                  </label>
                 </div>
 
                 <div className="flex justify-end space-x-3 pt-4">
@@ -307,13 +287,13 @@ export default function QuestionsPage() {
                       setEditingQuestion(null);
                       resetForm();
                     }}
-                    className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                    className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
                   >
                     {editingQuestion ? 'Update' : 'Simpan'}
                   </button>
@@ -323,6 +303,6 @@ export default function QuestionsPage() {
           </div>
         )}
       </div>
-    </div>
+    </AdminProtected>
   );
 } 

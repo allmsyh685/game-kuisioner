@@ -5,15 +5,51 @@ import Link from 'next/link';
 import { Statistics } from '@/types';
 import { getStatistics } from '@/lib/api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Users, FileText, BarChart3, Download } from 'lucide-react';
+import { Users, FileText, BarChart3, Download, LogOut } from 'lucide-react';
+import PasskeyAuth from '@/components/ui/PasskeyAuth';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 export default function AdminDashboard() {
   const [statistics, setStatistics] = useState<Statistics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Check if user is already authenticated
+    const checkAuth = () => {
+      const authStatus = sessionStorage.getItem('adminAuthenticated');
+      if (authStatus === 'true') {
+        setIsAuthenticated(true);
+      }
+      setIsLoading(false);
+    };
+
+    checkAuth();
+
+    // Listen for storage changes (when passkey is entered in another component)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'adminAuthenticated' && e.newValue === 'true') {
+        setIsAuthenticated(true);
+        setIsLoading(false);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Also check periodically to catch sessionStorage changes
+    const interval = setInterval(checkAuth, 100);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
     const fetchStatistics = async () => {
       try {
         const data = await getStatistics();
@@ -26,7 +62,39 @@ export default function AdminDashboard() {
     };
 
     fetchStatistics();
-  }, []);
+  }, [isAuthenticated]);
+
+  const handleAuthSuccess = () => {
+    // Update local state immediately
+    setIsAuthenticated(true);
+    setIsLoading(false);
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('adminAuthenticated');
+    setIsAuthenticated(false);
+    setStatistics(null);
+    setLoading(true);
+    // Redirect to admin main page
+    window.location.href = '/admin';
+  };
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Memverifikasi akses...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show passkey authentication if not authenticated
+  if (!isAuthenticated) {
+    return <PasskeyAuth onAuthSuccess={handleAuthSuccess} />;
+  }
 
   if (loading) {
     return (
@@ -42,9 +110,19 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Kelola survey dan lihat statistik respons</p>
+        {/* Header with Logout Button */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+            <p className="text-gray-600">Kelola survey dan lihat statistik respons</p>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </button>
         </div>
 
         {/* Stats Cards */}
