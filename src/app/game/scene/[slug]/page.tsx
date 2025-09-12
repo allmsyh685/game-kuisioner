@@ -2,21 +2,24 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import axios from 'axios';
+import Image from 'next/image';
+import Skeleton from '@/components/ui/Skeleton';
+import { useGameStore, type GameState } from '@/lib/store';
 
 // Dynamic dialog import helper
 const dialogMap: Record<string, Scene1Frame[]> = {
   scene1: require('../../scene1Dialog').scene1Dialog as Scene1Frame[],
   scene2: require('../../scene2Dialog').scene2Dialog as Scene1Frame[],
-  scene3: require('../../scene3Dialog').scene3Dialog as Scene1Frame[],
-  scene4: require('../../scene4Dialog').scene4Dialog as Scene1Frame[],
+  scene3: require('../../scene3Dialog').scene3Dialog as Scene1Frame[]
   // Add more scenes as needed
 };
 
+interface QuestionOptionLocal { id: number; text: string }
 interface Question {
   id: number;
   text: string;
   type: string;
-  options?: string[];
+  options?: QuestionOptionLocal[];
   required?: boolean;
 }
 
@@ -30,9 +33,11 @@ interface Scene1Frame {
   characterImage?: string;
   redirectToTowerGames?: boolean;
   waves?: number;
+  isSubmit?: boolean; // when true, submit survey + score here
 }
 
-const API_BASE = 'https://questionnaireapi-production.up.railway.app/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://kuisioner-api-production.up.railway.app/api';
+const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN || '';
 
 function getIdentifikasiText(userName: string, userAge: string, userLocation: string) {
   return (
@@ -54,14 +59,16 @@ const Scene: React.FC = () => {
   const dialog: Scene1Frame[] = dialogMap[slug] || dialogMap['scene1'];
   const [frameIdx, setFrameIdx] = useState(0);
   const [question, setQuestion] = useState<Question | null>(null);
-  const [answer, setAnswer] = useState<string>('');
+  const [answer, setAnswer] = useState<number | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [userName, setUserName] = useState('');
-  const [userLocation, setUserLocation] = useState('');
-  const [userAge, setUserAge] = useState('');
-  const [userInfoSubmitted, setUserInfoSubmitted] = useState(false);
+  const userName = useGameStore((s: GameState) => s.userName);
+  const userLocation = useGameStore((s: GameState) => s.userLocation);
+  const userAge = useGameStore((s: GameState) => s.userAge);
+  const setUserInfo = useGameStore((s: GameState) => s.setUserInfo);
+  const userInfoSubmitted = useGameStore((s: any) => s.userInfoSubmitted) as boolean;
+  const setUserInfoSubmitted = useGameStore((s: any) => s.setUserInfoSubmitted) as (v: boolean) => void;
   const [loadingUserInfo, setLoadingUserInfo] = useState(true);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [audioLoaded, setAudioLoaded] = useState(false);
@@ -71,32 +78,24 @@ const Scene: React.FC = () => {
   const frame: Scene1Frame = dialog[frameIdx];
 
   useEffect(() => {
-    // Cek localStorage untuk user info
-    const storedName = typeof window !== 'undefined' ? localStorage.getItem('userName') : null;
-    const storedLocation = typeof window !== 'undefined' ? localStorage.getItem('userLocation') : null;
-    const storedAge = typeof window !== 'undefined' ? localStorage.getItem('userAge') : null;
-    if (storedName && storedLocation && storedAge) {
-      setUserName(storedName);
-      setUserLocation(storedLocation);
-      setUserAge(storedAge);
-      setUserInfoSubmitted(true);
-    }
+    // Do not auto-submit when fields become non-empty.
+    // Only mark as loaded so the form can render and user can submit explicitly.
     setLoadingUserInfo(false);
   }, []);
 
   useEffect(() => {
     if (frame && frame.questionId) {
       setLoading(true);
-      axios.get(`${API_BASE}/questions`)
+      axios.get(`${API_BASE}/questions`, { headers: { ...(API_TOKEN ? { 'Authorization': `Bearer ${API_TOKEN}` } : {}) } })
         .then(res => {
           let q = res.data.data.find((q: unknown) => Number((q as { id: number }).id) === Number(frame.questionId));
           if (q) {
             // mapping field agar frontend dapat .text, .type, .options
             q = {
               ...q,
-              text: q.text || q.question_text,
-              type: q.type || 'select',
-              options: Array.isArray(q.options) ? q.options : [],
+              text: (q as any).question_text,
+              type: 'select',
+              options: Array.isArray((q as any).options) ? (q as any).options : [],
             };
             console.log('question:', q);
           } else {
@@ -113,7 +112,7 @@ const Scene: React.FC = () => {
     } else {
       setQuestion(null);
     }
-    setAnswer('');
+    setAnswer(null);
   }, [frameIdx]);
 
   // Audio functionality
@@ -208,37 +207,43 @@ const Scene: React.FC = () => {
     };
   }, []);
 
-  const handleNext = (selectedAnswer?: string) => {
+  const handleNext = async (selectedAnswer?: number) => {
     // Don't stop audio when navigating - let it continue if same audio file
     
     if (frame.questionId && question) {
       const answerToSave = selectedAnswer !== undefined ? selectedAnswer : answer;
-      // Save answer to localStorage
-      if (typeof window !== 'undefined') {
-        const saved = localStorage.getItem(`${slug}Answers`) || '{}';
-        const updated = { ...JSON.parse(saved), [question.id]: answerToSave };
-        localStorage.setItem(`${slug}Answers`, JSON.stringify(updated));
-      }
+      // Save answer to store (persisted)
+      useGameStore.getState().saveAnswer(slug as string, Number(question.id), Number(answerToSave));
       setSubmitted(true);
       setTimeout(() => {
         setSubmitted(false);
         setFrameIdx(idx => Math.min(idx + 1, dialog.length - 1));
       }, 800);
     } else {
-      // If this is the last frame
-      if (frameIdx === dialog.length - 1) {
-        if (slug === 'scene1' || slug === 'scene2' || slug === 'scene3') {
-          const waves = slug === 'scene1' ? 1 : slug === 'scene2' ? 2 : 3;
-          window.location.href = `/towergames?waves=${waves}`;
-        } else if (slug === 'scene4') {
-          // POST all answers to API, then navigate to main page
-          handleSubmitAll().then(() => {
-            window.location.href = '/';
-          });
-        }
+      // If this frame instructs to submit, do it now (scene-controlled submit)
+      if (frame?.isSubmit) {
+        const res = await handleSubmitAll();
+        const query = res ? `?user=${encodeURIComponent(res.userName)}&points=${encodeURIComponent(String(res.totalPoints))}` : '';
+        window.location.href = `/towergames/leaderboard${query}`;
         return;
       }
-      setFrameIdx(idx => Math.min(idx + 1, dialog.length - 1));
+
+      // Otherwise, handle optional redirect to tower game with waves for this scene
+      if (frame?.redirectToTowerGames) {
+        const waves = frame.waves ?? (slug === 'scene1' ? 1 : slug === 'scene2' ? 2 : 3);
+        window.location.href = `/towergames?waves=${waves}`;
+        return;
+      }
+
+      // Default: go to next frame or stop at the last
+      if (frameIdx < dialog.length - 1) {
+        setFrameIdx(idx => Math.min(idx + 1, dialog.length - 1));
+      } else {
+        // At end with no submit/redirect, just show done state or go leaderboard
+        const res = await handleSubmitAll();
+        const query = res ? `?user=${encodeURIComponent(res.userName)}&points=${encodeURIComponent(String(res.totalPoints))}` : '';
+        window.location.href = `/towergames/leaderboard${query}`;
+      }
     }
   };
 
@@ -266,48 +271,38 @@ const Scene: React.FC = () => {
   };
 
   // Fungsi untuk submit ke API di frame terakhir
-  const handleSubmitAll = async () => {
-    const userName = localStorage.getItem('userName') || '';
-    const userLocation = localStorage.getItem('userLocation') || '';
-    const userAge = localStorage.getItem('userAge') || '';
+  const handleSubmitAll = async (): Promise<{ userName: string; totalPoints: number } | null> => {
+    const { answersByScene, pointsByScene } = useGameStore.getState();
+    const allAnswers = (Object.values(answersByScene as Record<string, Record<number, number>>) as Record<number, number>[]) 
+      .reduce((acc: Record<number, number>, obj: Record<number, number>) => ({ ...acc, ...obj }), {} as Record<number, number>);
 
-    // Combine all scene answers
-    const allAnswers = {
-      ...JSON.parse(localStorage.getItem('scene1Answers') || '{}'),
-      ...JSON.parse(localStorage.getItem('scene2Answers') || '{}'),
-      ...JSON.parse(localStorage.getItem('scene3Answers') || '{}'),
-      ...JSON.parse(localStorage.getItem('scene4Answers') || '{}'),
-    };
+    // Build new payload for backend: answers with question_id & option_id
+    const answersArray = Object.entries(allAnswers).map(([qid, optId]) => ({
+      question_id: Number(qid),
+      option_id: Number(optId as any),
+    }));
 
-    // Map to API fields (adjust question IDs as needed)
     const payload = {
       name: userName,
       age: Number(userAge),
       location: userLocation,
-      education_level: allAnswers[1] || allAnswers[3] || '',
-      ai_usage_frequency: allAnswers[2] || allAnswers[4] || '',
-      ai_purpose: allAnswers[3] || allAnswers[5] || '',
-      ai_tool_used: allAnswers[4] || allAnswers[6] || '',
-      difficulty_without_ai: allAnswers[5] || allAnswers[7] || '',
-      anxiety_without_ai: allAnswers[6] || allAnswers[8] || '',
-      ai_important_routine: allAnswers[7] || allAnswers[9] || '',
-      more_productive_with_ai: allAnswers[8] || allAnswers[10] || '',
-      rely_on_ai_decisions: allAnswers[9] || allAnswers[11] || '',
-      ai_better_than_humans: allAnswers[10] || allAnswers[12] || '',
+      answers: answersArray,
     };
 
     try {
       // Post survey responses first
-      const response = await axios.post(`${API_BASE}/responses`, payload);
+      const response = await axios.post(`${API_BASE}/responses`, payload, { headers: { ...(API_TOKEN ? { 'Authorization': `Bearer ${API_TOKEN}` } : {}) } });
       alert('Jawaban berhasil dikirim!');
       
-      // Sum all tower defense points from localStorage
-      const scene1Points = parseInt(localStorage.getItem('scene1Points') || '0', 10);
-      const scene2Points = parseInt(localStorage.getItem('scene2Points') || '0', 10);
-      const scene3Points = parseInt(localStorage.getItem('scene3Points') || '0', 10);
-      const scene4Points = parseInt(localStorage.getItem('scene4Points') || '0', 10);
-      
-      const totalPoints = scene1Points + scene2Points + scene3Points + scene4Points;
+      // Sum all tower defense points from store and legacy localStorage, prefer higher
+      const storePoints = (Object.values(pointsByScene as Record<string, number>) as number[])
+        .reduce((sum: number, p: number) => sum + (p || 0), 0);
+      const ls1 = parseInt(localStorage.getItem('scene1Points') || '0', 10);
+      const ls2 = parseInt(localStorage.getItem('scene2Points') || '0', 10);
+      const ls3 = parseInt(localStorage.getItem('scene3Points') || '0', 10);
+      const ls4 = parseInt(localStorage.getItem('scene4Points') || '0', 10);
+      const localPoints = ls1 + ls2 + ls3 + ls4;
+      const totalPoints = Math.max(storePoints, localPoints);
       
       // Post score to leaderboard if there are points
       if (totalPoints > 0 && userName) {
@@ -318,7 +313,7 @@ const Scene: React.FC = () => {
             survey_id: response.data.data.id // Get survey ID from response.data.data.id
           };
           
-          await axios.post(`${API_BASE}/scores`, scorePayload);
+          await axios.post(`${API_BASE}/scores`, scorePayload, { headers: { ...(API_TOKEN ? { 'Authorization': `Bearer ${API_TOKEN}` } : {}) } });
           console.log('Score posted to leaderboard:', scorePayload);
         } catch (scoreError) {
           console.error('Failed to post score to leaderboard:', scoreError);
@@ -326,7 +321,8 @@ const Scene: React.FC = () => {
         }
       }
       
-      // Clear answers and user info from localStorage
+      // Clear answers and user info from store and legacy localStorage
+      useGameStore.getState().clearAll();
       if (typeof window !== 'undefined') {
         localStorage.removeItem('userName');
         localStorage.removeItem('userLocation');
@@ -340,40 +336,43 @@ const Scene: React.FC = () => {
         localStorage.removeItem('scene3Points');
         localStorage.removeItem('scene4Points');
       }
+      return { userName, totalPoints };
     } catch (e) {
       alert('Gagal mengirim jawaban!');
+      return null;
     }
   };
 
-  if (loadingUserInfo) return null;
+  if (loadingUserInfo) return (
+    <div className="w-screen h-screen min-h-screen min-w-screen flex items-center justify-center bg-gray-900 text-white">
+      <div className="w-full max-w-4xl px-6">
+        <Skeleton className="w-full h-10 mb-4" />
+        <Skeleton className="w-full h-80" />
+      </div>
+    </div>
+  );
 
   return (
     <div className="w-screen h-screen min-h-screen min-w-screen flex flex-col items-center justify-center bg-gray-900 text-white overflow-hidden relative">
       {/* Background image fullscreen */}
       {userInfoSubmitted && frame.image && (
-        <div
-          className="absolute inset-0 w-full h-full z-0"
-          style={{
-            backgroundImage: `url(${frame.image})`,
-            backgroundSize: 'contain',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center',
-            filter: 'brightness(0.7) blur(0px)',
-          }}
-        />
+        <div className="absolute inset-0 w-full h-full z-0 flex items-center justify-center">
+          <Image
+            src={frame.image}
+            alt="background"
+            fill
+            sizes="100vw"
+            priority
+            style={{ objectFit: 'contain', filter: 'brightness(0.7) blur(0px)' }}
+          />
+        </div>
       )}
       <div className="w-full h-full flex flex-col items-center justify-end relative z-10 pb-16">
         {/* Form user info sebelum scene 1 */}
-        {!userInfoSubmitted && (
+        {slug === 'scene1' && !userInfoSubmitted && (
           <form
             onSubmit={e => {
               e.preventDefault();
-              // Simpan ke localStorage
-              if (typeof window !== 'undefined') {
-                localStorage.setItem('userName', userName);
-                localStorage.setItem('userLocation', userLocation);
-                localStorage.setItem('userAge', userAge);
-              }
               setUserInfoSubmitted(true);
             }}
             className="flex flex-col items-center justify-center h-full w-full bg-black bg-opacity-90 absolute z-50 backdrop-blur-sm"
@@ -400,7 +399,7 @@ const Scene: React.FC = () => {
                     className="w-full p-4 rounded-lg bg-gray-800 text-white text-lg border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
                     placeholder="Enter your full name"
                     value={userName}
-                    onChange={e => setUserName(e.target.value)}
+                    onChange={e => setUserInfo(e.target.value, userAge, userLocation)}
                     required
                   />
                 </div>
@@ -416,7 +415,7 @@ const Scene: React.FC = () => {
                     className="w-full p-4 rounded-lg bg-gray-800 text-white text-lg border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
                     placeholder="Enter your age"
                     value={userAge}
-                    onChange={e => setUserAge(e.target.value)}
+                    onChange={e => setUserInfo(userName, e.target.value, userLocation)}
                     required
                   />
                 </div>
@@ -430,7 +429,7 @@ const Scene: React.FC = () => {
                     className="w-full p-4 rounded-lg bg-gray-800 text-white text-lg border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
                     placeholder="City/Province"
                     value={userLocation}
-                    onChange={e => setUserLocation(e.target.value)}
+                    onChange={e => setUserInfo(userName, userAge, e.target.value)}
                     required
                   />
                 </div>
@@ -452,7 +451,7 @@ const Scene: React.FC = () => {
             {/* Character Image (optional, absolute center bottom) */}
             {frame.characterImage && (
               <div className="fixed left-1/2 bottom-0 transform -translate-x-1/2 z-20 pointer-events-none">
-                <img src={frame.characterImage} alt="character" className="w-96 h-[36rem] object-bottom drop-shadow-2xl" />
+                <Image src={frame.characterImage} alt="character" width={384} height={576} priority className="w-96 h-[36rem] object-bottom drop-shadow-2xl" />
               </div>
             )}
             {/* Modal dialog + navigation */}
@@ -494,25 +493,25 @@ const Scene: React.FC = () => {
                     {/* Opsi jawaban sebagai tombol list */}
                     {question.type === 'select' && question.options && (
                       <div className="flex flex-col gap-4 w-full items-center mb-6">
-                        {question.options.map((opt: string) => (
+                        {question.options.map((opt: any) => (
                           <button
-                            key={opt}
+                            key={opt.id}
                             type="button"
                             className={`w-full max-w-md p-4 rounded-xl text-lg font-semibold border-2 transition-all duration-200 transform hover:scale-105
-                              ${answer === opt 
+                              ${answer === opt.id 
                                 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white border-blue-500 shadow-lg' 
                                 : 'bg-gray-800 text-white border-gray-600 hover:border-blue-500 hover:bg-gray-700'
                               }
                               ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                             onClick={() => {
                               if (!loading) {
-                                setAnswer(opt);
-                                handleNext(opt);
+                                setAnswer(opt.id);
+                                handleNext(opt.id);
                               }
                             }}
                             disabled={loading}
                           >
-                            {opt}
+                            {opt.text}
                           </button>
                         ))}
                       </div>
@@ -573,7 +572,7 @@ const Scene: React.FC = () => {
                     <button
                       onClick={() => handleNext()}
                       className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg font-bold rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
-                      disabled={frame.questionId ? !answer : false}
+                      disabled={frame.questionId ? answer === null : false}
                     >
                       Next ➡️
                     </button>

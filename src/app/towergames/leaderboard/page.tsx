@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 interface Score {
@@ -9,26 +10,55 @@ interface Score {
   created_at: string;
 }
 
-const API_BASE = 'https://questionnaireapi-production.up.railway.app/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://kuisioner-api-production.up.railway.app/api';
+const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN || '';
 
 const Leaderboard: React.FC = () => {
+  const searchParams = useSearchParams();
   const [scores, setScores] = useState<Score[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [userName, setUserName] = useState<string | null>(null);
+  const [userPoints, setUserPoints] = useState<number | null>(null);
+  const [userRank, setUserRank] = useState<number | null>(null);
 
   useEffect(() => {
-    fetch(`${API_BASE}/scores/leaderboard`)
+    const u = searchParams.get('user');
+    const p = searchParams.get('points');
+    setUserName(u);
+    setUserPoints(p ? Number(p) : null);
+
+    fetch(`${API_BASE}/scores/leaderboard`, { headers: { ...(API_TOKEN ? { 'Authorization': `Bearer ${API_TOKEN}` } : {}) } })
       .then(res => res.json())
-      .then(data => {
+      .then(async data => {
         if (data.success) {
-          setScores(data.data);
+          // Show only top 3
+          const top = Array.isArray(data.data) ? data.data.slice(0, 3) : [];
+          setScores(top);
+
+          // If user just arrived with points, fetch rank announcement
+          if (p) {
+            try {
+              const rankRes = await fetch(`${API_BASE}/scores/rank?points=${encodeURIComponent(p)}`, { headers: { ...(API_TOKEN ? { 'Authorization': `Bearer ${API_TOKEN}` } : {}) } });
+              const rankJson = await rankRes.json();
+              if (rankJson && rankJson.success) {
+                setUserRank(rankJson.data.rank ?? null);
+                // Prefer server-provided top 3 if present
+                if (Array.isArray(rankJson.data.top)) {
+                  setScores(rankJson.data.top);
+                }
+              }
+            } catch {
+              // Ignore rank error silently
+            }
+          }
         } else {
           setError('Failed to fetch leaderboard');
         }
       })
       .catch(() => setError('Failed to fetch leaderboard'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [searchParams]);
 
   const getMedalIcon = (position: number) => {
     switch (position) {
@@ -65,6 +95,21 @@ const Leaderboard: React.FC = () => {
           Top players from our tower defense research game. Can you make it to the top?
         </p>
       </div>
+
+      {/* Rank Announcement */}
+      {userName && userPoints !== null && (
+        <div className="w-full max-w-2xl mb-8">
+          <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-4 rounded-xl shadow-lg border border-emerald-400/40">
+            <div className="text-center">
+              <div className="text-2xl font-bold mb-1">🎉 Well done, {userName}!</div>
+              <div className="text-lg">
+                You scored <span className="font-semibold">{userPoints.toLocaleString()}</span> points
+                {userRank ? <> and your current rank is <span className="font-semibold">#{userRank}</span></> : null}.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Leaderboard Content */}
       <div className="w-full max-w-2xl">

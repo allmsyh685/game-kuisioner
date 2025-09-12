@@ -1,16 +1,25 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Response } from '@/types';
-import { getResponses } from '@/lib/api';
+import { ResponseMaster } from '@/types';
+import { getResponses, getResponse } from '@/lib/api';
 import { Eye } from 'lucide-react';
 import AdminProtected from '@/components/ui/AdminProtected';
 
 export default function ResponsesPage() {
-  const [responses, setResponses] = useState<Response[]>([]);
+  const [responses, setResponses] = useState<ResponseMaster[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedResponse, setSelectedResponse] = useState<Response | null>(null);
+  const [selectedResponse, setSelectedResponse] = useState<ResponseMaster | null>(null);
   const [showModal, setShowModal] = useState(false);
+
+  // Accent styles used to visually separate each Q&A item in the modal
+  const ACCENTS = [
+    { border: 'border-blue-500', bg: 'bg-blue-50', text: 'text-blue-800', chipBorder: 'border-blue-200' },
+    { border: 'border-green-500', bg: 'bg-green-50', text: 'text-green-800', chipBorder: 'border-green-200' },
+    { border: 'border-purple-500', bg: 'bg-purple-50', text: 'text-purple-800', chipBorder: 'border-purple-200' },
+    { border: 'border-amber-500', bg: 'bg-amber-50', text: 'text-amber-800', chipBorder: 'border-amber-200' },
+    { border: 'border-rose-500', bg: 'bg-rose-50', text: 'text-rose-800', chipBorder: 'border-rose-200' },
+  ];
 
   useEffect(() => {
     fetchResponses();
@@ -27,9 +36,14 @@ export default function ResponsesPage() {
     }
   };
 
-  const handleViewResponse = (response: Response) => {
-    setSelectedResponse(response);
-    setShowModal(true);
+  const handleViewResponse = async (response: ResponseMaster) => {
+    try {
+      const full = await getResponse(response.id);
+      setSelectedResponse(full);
+      setShowModal(true);
+    } catch (e) {
+      console.error('Failed to load response detail', e);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -82,12 +96,7 @@ export default function ResponsesPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Lokasi
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Pendidikan
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    AI Tool
-                  </th>
+                  
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Tanggal
                   </th>
@@ -111,14 +120,7 @@ export default function ResponsesPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {response.location}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                        {response.education_level}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {response.ai_tool_used}
-                    </td>
+                    
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formatDate(response.created_at)}
                     </td>
@@ -172,60 +174,36 @@ export default function ResponsesPage() {
                       <label className="text-sm font-medium text-gray-600">Lokasi</label>
                       <p className="text-gray-900">{selectedResponse.location}</p>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Pendidikan</label>
-                      <p className="text-gray-900">{selectedResponse.education_level}</p>
-                    </div>
                   </div>
                 </div>
-
-                {/* AI Usage Information */}
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Penggunaan AI</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Frekuensi Penggunaan</label>
-                      <p className="text-gray-900">{selectedResponse.ai_usage_frequency}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Tujuan Penggunaan</label>
-                      <p className="text-gray-900">{selectedResponse.ai_purpose}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">AI Tool yang Digunakan</label>
-                      <p className="text-gray-900">{selectedResponse.ai_tool_used}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Survey Responses */}
-                <div className="md:col-span-2 bg-gray-50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Jawaban Survey</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Kesulitan tanpa AI</label>
-                      <p className="text-gray-900">{selectedResponse.difficulty_without_ai}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Kecemasan tanpa AI</label>
-                      <p className="text-gray-900">{selectedResponse.anxiety_without_ai}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">AI penting dalam rutinitas</label>
-                      <p className="text-gray-900">{selectedResponse.ai_important_routine}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Lebih produktif dengan AI</label>
-                      <p className="text-gray-900">{selectedResponse.more_productive_with_ai}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Mengandalkan AI untuk keputusan</label>
-                      <p className="text-gray-900">{selectedResponse.rely_on_ai_decisions}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">AI lebih baik dari manusia</label>
-                      <p className="text-gray-900">{selectedResponse.ai_better_than_humans}</p>
-                    </div>
+                {/* Answers List */}
+                <div className="md:col-span-2 bg-white rounded-lg p-4 border border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Jawaban</h3>
+                  <div className="space-y-4">
+                    {(selectedResponse as any).answers?.map((a: any, idx: number) => {
+                      const accent = ACCENTS[idx % ACCENTS.length];
+                      return (
+                        <div
+                          key={idx}
+                          className={`rounded-xl p-4 border-l-4 ${accent.border} ${accent.bg}`}
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1 pr-4">
+                              <p className="text-xs uppercase tracking-wide text-gray-500">Pertanyaan</p>
+                              <p className="text-gray-900 font-medium leading-relaxed">{a.question_text}</p>
+                            </div>
+                            <span
+                              className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-white ${accent.text} ${accent.chipBorder} border`}
+                            >
+                              Jawaban
+                            </span>
+                          </div>
+                          <div className="mt-3">
+                            <p className="text-gray-900">{a.answer || '-'}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 

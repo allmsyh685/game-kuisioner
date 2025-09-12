@@ -1,14 +1,37 @@
 import axios from 'axios';
-import { Question, Response, ApiResponse, Statistics, CreateQuestionData, UpdateQuestionData } from '@/types';
+import { Question, ApiResponse, Statistics, CreateQuestionData, UpdateQuestionData, SubmitResponsePayload, ResponseMaster } from '@/types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://questionnaireapi-production.up.railway.app/api';
-
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://kuisioner-api-production.up.railway.app/api';
+const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN || '';
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    ...(API_TOKEN ? { 'Authorization': `Bearer ${API_TOKEN}` } : {}),
   },
 });
+
+// Log detailed server errors to aid debugging in development/production
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status;
+    const data = error?.response?.data;
+    const method = error?.config?.method?.toUpperCase();
+    const path = error?.config?.url || '';
+    const url = `${API_BASE_URL}${path}`;
+    const message = error?.message || 'Unknown error';
+    // eslint-disable-next-line no-console
+    console.error('API request failed:', {
+      status,
+      method,
+      url,
+      message,
+      data: typeof data === 'object' ? JSON.stringify(data) : data,
+    });
+    return Promise.reject(error);
+  }
+);
 
 // Public API calls
 export const getQuestions = async (): Promise<Question[]> => {
@@ -16,8 +39,8 @@ export const getQuestions = async (): Promise<Question[]> => {
   return response.data.data;
 };
 
-export const submitResponse = async (data: Omit<Response, 'id' | 'created_at' | 'updated_at'>): Promise<Response> => {
-  const response = await api.post<ApiResponse<Response>>('/responses', data);
+export const submitResponse = async (data: SubmitResponsePayload): Promise<ResponseMaster> => {
+  const response = await api.post<ApiResponse<ResponseMaster>>('/responses', data);
   return response.data.data;
 };
 
@@ -41,13 +64,13 @@ export const deleteQuestion = async (id: number): Promise<void> => {
   await api.delete(`/admin/questions/${id}`);
 };
 
-export const getResponses = async (): Promise<Response[]> => {
-  const response = await api.get<ApiResponse<Response[]>>('/admin/responses');
+export const getResponses = async (): Promise<ResponseMaster[]> => {
+  const response = await api.get<ApiResponse<ResponseMaster[]>>('/admin/responses');
   return response.data.data;
 };
 
-export const getResponse = async (id: number): Promise<Response> => {
-  const response = await api.get<ApiResponse<Response>>(`/admin/responses/${id}`);
+export const getResponse = async (id: number): Promise<ResponseMaster> => {
+  const response = await api.get<ApiResponse<ResponseMaster & { answers: Array<{question_id:number;question_text:string;answer:string}> }>>(`/admin/responses/${id}`);
   return response.data.data;
 };
 

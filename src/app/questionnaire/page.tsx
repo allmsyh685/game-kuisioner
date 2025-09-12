@@ -4,23 +4,17 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Question } from '@/types';
+import { Question, SubmitResponsePayload } from '@/types';
 import { getQuestions, submitResponse } from '@/lib/api';
 
 const responseSchema = z.object({
   name: z.string().min(1, 'Nama harus diisi'),
   age: z.number().min(1, 'Usia harus diisi').max(120, 'Usia tidak valid'),
   location: z.string().min(1, 'Lokasi harus diisi'),
-  education_level: z.enum(['smp', 'sma', 'mahasiswa', 'lainnya']),
-  ai_usage_frequency: z.enum(['Beberapa kali dalam sebulan', 'Beberapa kali dalam seminggu', 'belum pernah', 'setiap hari']),
-  ai_purpose: z.enum(['Pendidikan', 'pekerjaan', 'hiburan', 'Lainnya']),
-  ai_tool_used: z.enum(['chatgpt', 'deepseek', 'grok', 'lainnya']),
-  difficulty_without_ai: z.enum(['benar sekali', 'benar', 'tidak benar', 'tidak benar sama sekali']),
-  anxiety_without_ai: z.enum(['benar sekali', 'benar', 'tidak benar', 'tidak benar sama sekali']),
-  ai_important_routine: z.enum(['benar sekali', 'benar', 'tidak benar', 'tidak benar sama sekali']),
-  more_productive_with_ai: z.enum(['benar sekali', 'benar', 'tidak benar', 'tidak benar sama sekali']),
-  rely_on_ai_decisions: z.enum(['benar sekali', 'benar', 'tidak benar', 'tidak benar sama sekali']),
-  ai_better_than_humans: z.enum(['benar sekali', 'benar', 'tidak benar', 'tidak benar sama sekali']),
+  // answers will be a record of questionId -> optionId
+  answers: z.record(z.string(), z.coerce.number().int()).refine((val) => Object.keys(val).length > 0, {
+    message: 'Jawaban harus diisi',
+  }),
 });
 
 type ResponseFormData = z.infer<typeof responseSchema>;
@@ -31,13 +25,9 @@ export default function QuestionnairePage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<ResponseFormData>({
+  const { register, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm<ResponseFormData>({
     resolver: zodResolver(responseSchema),
+    defaultValues: { answers: {} as Record<string, number> },
   });
 
   useEffect(() => {
@@ -58,9 +48,18 @@ export default function QuestionnairePage() {
   const onSubmit = async (data: ResponseFormData) => {
     setSubmitting(true);
     try {
-      await submitResponse(data);
+      const payload: SubmitResponsePayload = {
+        name: data.name,
+        age: data.age,
+        location: data.location,
+        answers: Object.entries(data.answers).map(([questionId, optionId]) => ({
+          question_id: Number(questionId),
+          option_id: Number(optionId),
+        })),
+      };
+      await submitResponse(payload);
       setSubmitted(true);
-      reset();
+      reset({ name: '', age: 0, location: '', answers: {} });
     } catch (error) {
       console.error('Error submitting response:', error);
       alert('Terjadi kesalahan saat mengirim jawaban. Silakan coba lagi.');
@@ -176,21 +175,19 @@ export default function QuestionnairePage() {
                 </h3>
                 <div className="space-y-3">
                   {question.options.map((option) => (
-                    <label key={option} className="flex items-center space-x-3 cursor-pointer">
+                    <label key={option.id} className="flex items-center space-x-3 cursor-pointer">
                       <input
                         type="radio"
-                        {...register(getFieldName(index))}
-                        value={option}
+                        {...register(`answers.${String(question.id)}` as const)}
+                        value={option.id}
                         className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                       />
-                      <span className="text-gray-700">{option}</span>
+                      <span className="text-gray-700">{option.text}</span>
                     </label>
                   ))}
                 </div>
-                {errors[getFieldName(index) as keyof typeof errors] && (
-                  <p className="text-red-500 text-sm mt-2">
-                    {errors[getFieldName(index) as keyof typeof errors]?.message}
-                  </p>
+                {errors.answers && (
+                  <p className="text-red-500 text-sm mt-2">Pilih salah satu jawaban.</p>
                 )}
               </div>
             ))}
@@ -210,19 +207,3 @@ export default function QuestionnairePage() {
     </div>
   );
 }
-
-function getFieldName(index: number): keyof ResponseFormData {
-  const fieldNames: (keyof ResponseFormData)[] = [
-    'education_level',
-    'ai_usage_frequency',
-    'ai_purpose',
-    'ai_tool_used',
-    'difficulty_without_ai',
-    'anxiety_without_ai',
-    'ai_important_routine',
-    'more_productive_with_ai',
-    'rely_on_ai_decisions',
-    'ai_better_than_humans',
-  ];
-  return fieldNames[index];
-} 

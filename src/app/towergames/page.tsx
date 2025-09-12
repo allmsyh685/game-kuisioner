@@ -19,16 +19,16 @@ function TowerGamesContent() {
   });
   
   useEffect(() => {
-    // Remove any scroll, margin, padding for fullscreen
+    // Hilangkan scroll, margin, dan padding untuk mode layar penuh
     document.body.style.margin = '0';
     document.body.style.padding = '0';
     document.body.style.overflow = 'hidden';
     
-    // Pass URL parameters to the game
+    // Teruskan parameter URL ke permainan
     const waves = searchParams.get('waves');
     console.log('TowerGames page loaded with waves parameter:', waves);
     if (waves) {
-      // Set the waves parameter in the URL for the game to read
+      // Setel parameter waves di URL agar dapat dibaca oleh game
       const currentUrl = new URL(window.location.href);
       currentUrl.searchParams.set('waves', waves);
       window.history.replaceState({}, '', currentUrl.toString());
@@ -42,12 +42,19 @@ function TowerGamesContent() {
     };
   }, [searchParams]);
 
-  // Function to load scripts sequentially
+  // Fungsi untuk memuat skrip secara berurutan
   const loadScriptSequentially = (src: string, id: string) => {
     return new Promise<void>((resolve, reject) => {
+      // Hindari memuat skrip yang sama dua kali
+      const existing = document.getElementById(id) as HTMLScriptElement | null;
+      if (existing) {
+        console.log(`Already present: ${src}`);
+        return resolve();
+      }
       const script = document.createElement('script');
       script.src = src;
       script.id = id;
+      script.async = false;
       script.onload = () => {
         console.log(`Loaded: ${src}`);
         resolve();
@@ -60,35 +67,39 @@ function TowerGamesContent() {
     });
   };
 
-  // Load all scripts when component mounts
+  // Muat semua skrip saat komponen pertama kali dirender
   useEffect(() => {
     const loadAllScripts = async () => {
       try {
+        if ((window as any).__tower_game_scripts_loaded__) {
+          console.log('Tower game scripts were already loaded, skipping re-load.');
+          return;
+        }
         console.log('Starting sequential script loading...');
         
-        // 1. Load Phaser first
+        // 1. Muat Phaser terlebih dahulu
         await loadScriptSequentially('/towergames/js/lib/phaser.min.js', 'phaser-script');
         setScriptsLoaded(prev => ({ ...prev, phaser: true }));
         
-        // Small delay to ensure Phaser is properly attached to global scope
+        // Jeda kecil untuk memastikan Phaser terpasang ke scope global
         await new Promise(resolve => setTimeout(resolve, 100));
         
-        // Ensure Phaser is global
+        // Pastikan Phaser bersifat global
         if (typeof window !== 'undefined' && (window as any).Phaser) {
           console.log('Phaser loaded and available globally');
         } else {
           console.error('Phaser not available globally after loading');
         }
         
-        // 2. Load nipplejs
+        // 2. Muat nipplejs
         await loadScriptSequentially('https://cdn.jsdelivr.net/npm/nipplejs@0.9.0/dist/nipplejs.min.js', 'nipplejs-script');
         setScriptsLoaded(prev => ({ ...prev, nipplejs: true }));
         
-        // 3. Load phaser patch
+        // 3. Muat phaser patch
         await loadScriptSequentially('/towergames/js/lib/phaser.patch.js', 'phaser-patch-script');
         setScriptsLoaded(prev => ({ ...prev, patch: true }));
         
-        // 4. Load state files (these define MainGame)
+        // 4. Muat file state (mendefinisikan MainGame)
         await loadScriptSequentially('/towergames/js/states/bootstate.js', 'bootstate-script');
         await loadScriptSequentially('/towergames/js/states/loaderstate.js', 'loaderstate-script');
         await loadScriptSequentially('/towergames/js/states/mainmenustate.js', 'mainmenustate-script');
@@ -96,20 +107,20 @@ function TowerGamesContent() {
         await loadScriptSequentially('/towergames/js/states/gameoverstate.js', 'gameoverstate-script');
         setScriptsLoaded(prev => ({ ...prev, states: true }));
         
-        // Ensure MainGame is global
+        // Pastikan MainGame bersifat global
         if (typeof window !== 'undefined' && (window as any).MainGame) {
           console.log('MainGame loaded and available globally');
         } else {
           console.error('MainGame not available globally after loading states');
         }
         
-        // 5. Load resources and utilities
+        // 5. Muat resources dan utilities
         await loadScriptSequentially('/towergames/js/resources.js', 'resources-script');
         await loadScriptSequentially('/towergames/js/waves.js', 'waves-script');
         await loadScriptSequentially('/towergames/js/points.js', 'points-script');
         setScriptsLoaded(prev => ({ ...prev, resources: true }));
         
-        // 6. Load managers
+        // 6. Muat managers
         await loadScriptSequentially('/towergames/js/managers/collisionmanager.js', 'collisionmanager-script');
         await loadScriptSequentially('/towergames/js/managers/inputmanager.js', 'inputmanager-script');
         await loadScriptSequentially('/towergames/js/managers/inventorymanager.js', 'inventorymanager-script');
@@ -117,7 +128,7 @@ function TowerGamesContent() {
         await loadScriptSequentially('/towergames/js/managers/wavemanager.js', 'wavemanager-script');
         setScriptsLoaded(prev => ({ ...prev, managers: true }));
         
-        // 7. Load entities
+        // 7. Muat entities
         await loadScriptSequentially('/towergames/js/entities/player.js', 'player-script');
         await loadScriptSequentially('/towergames/js/entities/bullet.js', 'bullet-script');
         await loadScriptSequentially('/towergames/js/entities/bear.js', 'bear-script');
@@ -129,20 +140,21 @@ function TowerGamesContent() {
         await loadScriptSequentially('/towergames/js/entities/explosion.js', 'explosion-script');
         setScriptsLoaded(prev => ({ ...prev, entities: true }));
         
-        // 8. Load GUI components
+        // 8. Muat komponen GUI
         await loadScriptSequentially('/towergames/js/gui/toolbar.js', 'toolbar-script');
         await loadScriptSequentially('/towergames/js/gui/toolbar_slot.js', 'toolbar-slot-script');
         await loadScriptSequentially('/towergames/js/gui/hud.js', 'hud-script');
         await loadScriptSequentially('/towergames/js/gui/menuscreen.js', 'menuscreen-script');
         setScriptsLoaded(prev => ({ ...prev, gui: true }));
         
-        // 9. Load main game script last
+        // 9. Muat skrip game utama terakhir
         await loadScriptSequentially('/towergames/js/main.js', 'main-script');
         setScriptsLoaded(prev => ({ ...prev, main: true }));
         
         console.log('All scripts loaded successfully!');
+        (window as any).__tower_game_scripts_loaded__ = true;
         
-        // Final check
+        // Pengecekan akhir
         setTimeout(() => {
           console.log('=== FINAL DEPENDENCY CHECK ===');
           console.log('Phaser available:', typeof (window as any).Phaser !== 'undefined');
@@ -152,7 +164,7 @@ function TowerGamesContent() {
         }, 1000);
         
       } catch (error) {
-        console.error('Error loading scripts:', error);
+        console.error('Terjadi kesalahan saat memuat skrip:', error);
       }
     };
 
@@ -161,9 +173,9 @@ function TowerGamesContent() {
 
   return (
     <>
-      <title>Tower Defense Game</title>
+      <title>Permainan Tower Defense</title>
       <div id="phaser-div" style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: 1, background: 'black' }} />
-      {/* Mobile Controls (hidden by default, must exist in React DOM) */}
+      {/* Kontrol Mobile (tersembunyi secara default, harus ada di React DOM) */}
       <div id="mobile-controls" style={{ display: 'none' }}>
         <div id="joystick-zone" style={{ position: 'fixed', left: 10, bottom: 10, width: 120, height: 120, zIndex: 1001 }}></div>
         <div id="shoot-area" style={{ position: 'fixed', right: 0, bottom: 0, width: '100vw', height: '100vh', zIndex: 1000 }}></div>
@@ -194,10 +206,10 @@ function TowerGamesContent() {
           }
         }}
       >
-        Show Mobile Controls
+        Tampilkan Kontrol Mobile
       </button>
       
-      {/* Loading indicator */}
+      {/* Indikator pemuatan */}
       {!scriptsLoaded.main && (
         <div style={{
           position: 'fixed',
@@ -211,15 +223,15 @@ function TowerGamesContent() {
           borderRadius: '10px',
           textAlign: 'center'
         }}>
-          <div>Loading Tower Defense Game...</div>
+          <div>Memuat Permainan Tower Defense...</div>
           <div style={{ marginTop: '10px', fontSize: '12px' }}>
-            {scriptsLoaded.phaser && '✓ Phaser Loaded'}<br/>
-            {scriptsLoaded.states && '✓ Game States Loaded'}<br/>
-            {scriptsLoaded.resources && '✓ Resources Loaded'}<br/>
-            {scriptsLoaded.managers && '✓ Managers Loaded'}<br/>
-            {scriptsLoaded.entities && '✓ Entities Loaded'}<br/>
-            {scriptsLoaded.gui && '✓ GUI Loaded'}<br/>
-            {scriptsLoaded.main && '✓ Main Game Loaded'}
+            {scriptsLoaded.phaser && '✓ Phaser Dimuat'}<br/>
+            {scriptsLoaded.states && '✓ State Game Dimuat'}<br/>
+            {scriptsLoaded.resources && '✓ Resource Dimuat'}<br/>
+            {scriptsLoaded.managers && '✓ Manager Dimuat'}<br/>
+            {scriptsLoaded.entities && '✓ Entity Dimuat'}<br/>
+            {scriptsLoaded.gui && '✓ GUI Dimuat'}<br/>
+            {scriptsLoaded.main && '✓ Game Utama Dimuat'}
           </div>
         </div>
       )}
@@ -229,7 +241,7 @@ function TowerGamesContent() {
 
 export default function TowerGamesPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div>Memuat...</div>}>
       <TowerGamesContent />
     </Suspense>
   );

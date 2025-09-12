@@ -40,19 +40,19 @@ const Navbar = () => {
                 href="/"
                 className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
-                Home
+                Beranda
               </Link>
               <Link
                 href="/questionnaire"
                 className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
-                Questionnaire
+                Kuisioner
               </Link>
               <Link
                 href="/towergames"
                 className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
-                Tower Games
+                Permainan Pertahanan Menara
               </Link>
               <Link
                 href="/admin"

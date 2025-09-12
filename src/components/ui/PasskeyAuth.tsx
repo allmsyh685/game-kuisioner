@@ -48,8 +48,8 @@ export default function PasskeyAuth({ onAuthSuccess }: PasskeyAuthProps) {
             <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
               <Lock className="w-8 h-8 text-blue-600" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Admin Access</h1>
-            <p className="text-gray-600">Masukkan passkey untuk mengakses dashboard admin</p>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Akses Admin</h1>
+            <p className="text-gray-600">Masukkan passkey untuk mengakses dasbor admin</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">

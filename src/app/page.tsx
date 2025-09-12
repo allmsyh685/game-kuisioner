@@ -1,11 +1,14 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 
 export default function Home() {
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState<'next' | 'prev'>('next');
+  const [cardShift, setCardShift] = useState(0);
   const carouselSlides = [
     {
       bgImg: '/assets/background_1.jpg',
@@ -39,60 +42,132 @@ export default function Home() {
     },
   ];
 
-  const prevSlide = () => setCarouselIndex((carouselIndex + carouselSlides.length - 1) % carouselSlides.length);
-  const nextSlide = () => setCarouselIndex((carouselIndex + 1) % carouselSlides.length);
+  const prevSlide = () => {
+    setSlideDirection('prev');
+    setCarouselIndex((carouselIndex + carouselSlides.length - 1) % carouselSlides.length);
+  };
+  const nextSlide = () => {
+    setSlideDirection('next');
+    setCarouselIndex((carouselIndex + 1) % carouselSlides.length);
+  };
+
+  // Swipe/drag support
+  const touchStartX = useRef<number | null>(null);
+  const touchDeltaX = useRef<number>(0);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchDeltaX.current = 0;
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    touchDeltaX.current = e.touches[0].clientX - touchStartX.current;
+  };
+
+  const onTouchEnd = () => {
+    const threshold = 50; // px
+    if (touchDeltaX.current > threshold) {
+      prevSlide();
+    } else if (touchDeltaX.current < -threshold) {
+      nextSlide();
+    }
+    touchStartX.current = null;
+    touchDeltaX.current = 0;
+  };
+
+  // Simple horizontal slide-in animation for the card on slide change
+  useEffect(() => {
+    const initial = slideDirection === 'next' ? 48 : -48;
+    // Set initial offset, then in next frame move to 0 to trigger CSS transition
+    setCardShift(initial);
+    const id = requestAnimationFrame(() => setCardShift(0));
+    return () => cancelAnimationFrame(id);
+  }, [carouselIndex, slideDirection]);
 
   return (
     <div className="min-h-screen">
       {/* Hero Section as Carousel */}
       <section
         className="relative min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8 transition-all duration-500"
-        style={{
-          backgroundImage: `url(${carouselSlides[carouselIndex].bgImg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
       >
+        {/* Sliding background track */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <div
+            className="flex h-full w-full"
+            style={{
+              width: `${carouselSlides.length * 100}%`,
+              transform: `translateX(-${carouselIndex * (100 / carouselSlides.length)}%)`,
+              transition: 'transform 600ms ease',
+            }}
+          >
+            {carouselSlides.map((slide, idx) => (
+              <div key={idx} className="relative h-full" style={{ width: `${100 / carouselSlides.length}%` }}>
+                <Image
+                  src={slide.bgImg}
+                  alt={`Hero background ${idx + 1}`}
+                  fill
+                  sizes="100vw"
+                  priority={idx === 0}
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
         {/* Overlay */}
-        <div className="absolute inset-0 bg-black/60 z-0" />
-        <div className="max-w-3xl mx-auto text-center py-12 relative z-10">
+        <div className="absolute inset-0 bg-black/60 z-10" />
+        <div className="max-w-3xl mx-auto text-center py-12 relative z-20">
           <div
             className="inline-block w-full bg-black/60 rounded-2xl shadow-2xl px-6 py-10 md:px-12 md:py-16"
-            style={{ minHeight: '340px' }}
+            style={{ minHeight: '340px', transform: `translateX(${cardShift}px)`, transition: 'transform 500ms ease' }}
           >
             <h1 className="text-4xl md:text-6xl font-bold mb-6 drop-shadow-lg text-white">{carouselSlides[carouselIndex].title}</h1>
             <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto drop-shadow-lg text-white">{carouselSlides[carouselIndex].desc}</p>
-            <a
-              href={carouselSlides[carouselIndex].button.href}
-              className={`font-bold py-4 px-8 rounded-lg text-lg transition-all duration-200 transform hover:scale-105 shadow-lg ${carouselSlides[carouselIndex].button.style}`}
-            >
-              {carouselSlides[carouselIndex].button.text}
-            </a>
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              <a
+                href={carouselSlides[carouselIndex].button.href}
+                className={`font-bold py-4 px-8 rounded-lg text-lg transition-all duration-200 transform hover:scale-105 shadow-lg ${carouselSlides[carouselIndex].button.style}`}
+              >
+                {carouselSlides[carouselIndex].button.text}
+              </a>
+              {carouselIndex === 0 && (
+                <Link
+                  href="/questionnaire"
+                  className="bg-gradient-to-r from-emerald-600 to-lime-600 hover:from-emerald-700 hover:to-lime-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
+                >
+                  📝 Kuisioner
+                </Link>
+              )}
+            </div>
           </div>
         </div>
-        {/* Carousel Controls */}
+        {/* Kontrol Carousel */}
         <button
           onClick={prevSlide}
           className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 hover:bg-opacity-60 text-white rounded-full p-2 z-10"
-          aria-label="Previous Slide"
+          aria-label="Slide Sebelumnya"
         >
           &#8592;
         </button>
         <button
           onClick={nextSlide}
           className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 hover:bg-opacity-60 text-white rounded-full p-2 z-10"
-          aria-label="Next Slide"
+          aria-label="Slide Selanjutnya"
         >
           &#8594;
         </button>
-        {/* Dots */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
+        {/* Titik navigasi (gaya Material Tailwind) */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
           {carouselSlides.map((_, idx) => (
             <button
               key={idx}
+              aria-label={`Ke slide ${idx + 1}`}
               onClick={() => setCarouselIndex(idx)}
-              className={`w-3 h-3 rounded-full ${carouselIndex === idx ? 'bg-white' : 'bg-white/50'} border border-white`}
-              aria-label={`Go to slide ${idx + 1}`}
+              className={`block h-1 rounded-2xl transition-all ${carouselIndex === idx ? 'w-8 bg-white' : 'w-4 bg-white/50'}`}
             />
           ))}
         </div>
@@ -103,38 +178,38 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 mt-8 mb-8 md:mt-0 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              What You&apos;ll Experience
+              Apa yang Akan Kamu Alami
             </h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              A unique combination of research and gaming that helps us understand AI usage patterns
+              Kombinasi unik antara riset dan permainan yang membantu kami memahami pola penggunaan AI
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
+            {/* Fitur 1 */}
             <div className="bg-gradient-to-br from-blue-900/50 to-purple-900/50 p-8 rounded-xl border border-blue-700/30 hover:border-blue-500/50 transition-all duration-300">
               <div className="text-4xl mb-4">📊</div>
-              <h3 className="text-xl font-bold text-white mb-4">Research Survey</h3>
+              <h3 className="text-xl font-bold text-white mb-4">Survei Riset</h3>
               <p className="text-gray-300">
-                Participate in our comprehensive survey about AI usage patterns, preferences, and experiences.
+                Ikuti survei komprehensif kami tentang pola penggunaan AI, preferensi, dan pengalamanmu.
               </p>
             </div>
 
-            {/* Feature 2 */}
+            {/* Fitur 2 */}
             <div className="bg-gradient-to-br from-green-900/50 to-teal-900/50 p-8 rounded-xl border border-green-700/30 hover:border-green-500/50 transition-all duration-300">
               <div className="text-4xl mb-4">🎮</div>
-              <h3 className="text-xl font-bold text-white mb-4">Tower Defense Game</h3>
+              <h3 className="text-xl font-bold text-white mb-4">Permainan Tower Defense</h3>
               <p className="text-gray-300">
-                Enjoy an engaging tower defense game with strategic gameplay and challenging levels.
+                Nikmati permainan tower defense yang seru dengan strategi mendalam dan level menantang.
               </p>
             </div>
 
-            {/* Feature 3 */}
+            {/* Fitur 3 */}
             <div className="bg-gradient-to-br from-yellow-900/50 to-orange-900/50 p-8 rounded-xl border border-yellow-700/30 hover:border-yellow-500/50 transition-all duration-300 mb-8 md:mb-0">
               <div className="text-4xl mb-4">🏆</div>
-              <h3 className="text-xl font-bold text-white mb-4">Leaderboard</h3>
+              <h3 className="text-xl font-bold text-white mb-4">Papan Peringkat</h3>
               <p className="text-gray-300">
-                Compete with other players and see your scores on our dynamic leaderboard system.
+                Bersaing dengan pemain lain dan lihat skor kamu pada sistem papan peringkat dinamis kami.
               </p>
             </div>
           </div>

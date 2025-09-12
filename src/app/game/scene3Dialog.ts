@@ -69,13 +69,21 @@ export const scene3Dialog = [
     autoPlay: true,
   },
   {
+    image: '/assets/game/scene4/frame2.gif',
+    audio: '/assets/game/scene4/audio4.flac',
+    text: 'E.V.I: Apakah kamu biasanya sering mengandalkan AI untuk membuat segala keputusan?',
+    effect: null,
+    characterImage: '/assets/game/scene1/evi4.png',
+    questionId: 9,
+    autoPlay: false,
+  },
+  {
     image: '/assets/game/scene3/frame1.gif',
     audio: '/assets/game/scene3/audio3.flac',
     text: 'Gameplay: Top-down shooter. Kalahkan para virus utama untuk menjaga pusat data.',
     effect: null,
     questionId: null,
     autoPlay: true,
-    redirectToTowerGames: true,
-    waves: 1,
+    isSubmit: true,
   },
 ]; 
