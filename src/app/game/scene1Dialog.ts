@@ -42,7 +42,6 @@ export const scene1Dialog = [
   {
     image: '/assets/game/scene1/frame2.png',
     audio: '/assets/game/scene1/audio1.flac',
-    text: 'E.V.I.: Sebelum itu, aku ingin tahu tentang tingkat pendidikanmu.',
     questionId: 1,
     effect: 'blink-shake',
     autoPlay: false,
