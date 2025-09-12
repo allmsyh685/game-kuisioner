@@ -18,7 +18,7 @@ export const scene1Dialog = [
   {
     image: '/assets/game/scene1/frame3.png',
     audio: '/assets/game/scene1/audio1.flac',
-    text: 'Haloooo…',
+    text: 'Haloooooo…',
     effect: 'blink-shake',
     questionId: null,
     autoPlay: true,
