@@ -18,7 +18,7 @@ export const scene1Dialog = [
   {
     image: '/assets/game/scene1/frame3.png',
     audio: '/assets/game/scene1/audio1.flac',
-    text: 'E.V.I. : Unit aktivasi... berhasil.',
+    text: 'Haloooo…',
     effect: 'blink-shake',
     questionId: null,
     autoPlay: true,
@@ -26,7 +26,7 @@ export const scene1Dialog = [
   {
     image: '/assets/game/scene1/frame2.png',
     audio: '/assets/game/scene1/audio1.flac',
-    text: 'E.V.I.: Selamat datang, manusia.',
+    text: 'Perkenalkan namaku E.V.I, pemandu dalam pengisian kuesioner di sini.',
     effect: 'blink-shake',
     questionId: null,
     autoPlay: true,
@@ -34,7 +34,7 @@ export const scene1Dialog = [
   {
     image: '/assets/game/scene1/frame2.png',
     audio: '/assets/game/scene1/audio1.flac',
-    text: 'E.V.I.: Aku membutuhkan bantuanmu.',
+    text: 'E.V.I.: Sebelum kamu mengisi kuesionernya, E.V.I ingin tahu identitasmu.',
     effect: 'blink-shake',
     questionId: null,
     autoPlay: true,
@@ -42,15 +42,23 @@ export const scene1Dialog = [
   {
     image: '/assets/game/scene1/frame2.png',
     audio: '/assets/game/scene1/audio1.flac',
-    text: 'E.V.I.: Sebelum itu, aku ingin tahu tentangmu.',
+    text: 'E.V.I.: Sebelum itu, aku ingin tahu tentang tingkat pendidikanmu.',
+    questionId: 1,
     effect: 'blink-shake',
     autoPlay: false,
   },
   {
     image: '/assets/game/scene1/frame2.png',
     audio: '/assets/game/scene1/audio1.flac',
+    text: 'E.V.I.: Terima kasih atas informasinya.',
     effect: 'blink-shake',
-    questionId: 1, 
+    autoPlay: false,
+  },
+  {
+    image: '/assets/game/scene1/frame2.png',
+    audio: '/assets/game/scene1/audio1.flac',
+    text: 'E.V.I.: Sekarang, E.V.I ingin tahu intensitasmu dalam mengisi kuesioner.',
+    effect: 'blink-shake',
     autoPlay: false,
   },
   {
@@ -63,18 +71,16 @@ export const scene1Dialog = [
   {
     image: '/assets/game/scene1/frame2.png',
     audio: '/assets/game/scene1/audio1.flac',
-    text: 'E.V.I.: Terima kasih atas jawabannya.',
     effect: 'blink-shake',
-    questionId: null,
-    autoPlay: true,
+    questionId: 3, 
+    autoPlay: false,
   },
   {
     image: '/assets/game/scene1/frame2.png',
     audio: '/assets/game/scene1/audio1.flac',
-    text: 'E.V.I.: Sekarang, mari kita mulai.',
     effect: 'blink-shake',
-    questionId: null,
-    autoPlay: true,
+    questionId: 4, 
+    autoPlay: false,
   },
   {
     image: '/assets/game/scene1/berguncang1.gif',
