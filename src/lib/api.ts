@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Question, ApiResponse, Statistics, CreateQuestionData, UpdateQuestionData, SubmitResponsePayload, ResponseMaster } from '@/types';
+import { Question, ApiResponse, Statistics, CreateQuestionData, UpdateQuestionData, SubmitResponsePayload, ResponseMaster, AdminQuestionView } from '@/types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://kuisioner-api-production.up.railway.app/api';
 const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN || '';
@@ -45,8 +45,8 @@ export const submitResponse = async (data: SubmitResponsePayload): Promise<Respo
 };
 
 // Admin API calls
-export const getAdminQuestions = async (): Promise<Question[]> => {
-  const response = await api.get<ApiResponse<Question[]>>('/admin/questions');
+export const getAdminQuestions = async (): Promise<AdminQuestionView[]> => {
+  const response = await api.get<ApiResponse<AdminQuestionView[]>>('/admin/questions');
   return response.data.data;
 };
 

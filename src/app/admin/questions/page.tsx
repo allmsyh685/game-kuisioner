@@ -1,16 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Question, CreateQuestionData } from '@/types';
+import { CreateQuestionData, AdminQuestionView } from '@/types';
 import { getAdminQuestions, createQuestion, updateQuestion, deleteQuestion } from '@/lib/api';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import AdminProtected from '@/components/ui/AdminProtected';
 
 export default function QuestionsPage() {
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions, setQuestions] = useState<AdminQuestionView[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+  const [editingQuestion, setEditingQuestion] = useState<AdminQuestionView | null>(null);
   const [formData, setFormData] = useState<CreateQuestionData>({
     question_text: '',
     options: [''],
@@ -51,11 +51,11 @@ export default function QuestionsPage() {
     }
   };
 
-  const handleEdit = (question: Question) => {
+  const handleEdit = (question: AdminQuestionView) => {
     setEditingQuestion(question);
     setFormData({
       question_text: question.question_text,
-      options: question.options,
+      options: question.options.map(o => String(o)),
       order: question.order,
       is_active: question.is_active,
     });

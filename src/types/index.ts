@@ -14,6 +14,17 @@ export interface Question {
   updated_at: string;
 }
 
+// Admin list view returns options as plain strings
+export interface AdminQuestionView {
+  id: number;
+  question_text: string;
+  options: string[];
+  order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface SubmitResponsePayload {
   name: string;
   age: number;
