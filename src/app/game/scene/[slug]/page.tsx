@@ -375,73 +375,94 @@ const Scene: React.FC = () => {
               e.preventDefault();
               setUserInfoSubmitted(true);
             }}
-            className="flex flex-col items-center justify-center h-full w-full bg-black bg-opacity-90 absolute z-50 backdrop-blur-sm"
-            style={{ top: 0, left: 0 }}
+            className="flex flex-col items-center justify-center h-full w-full absolute z-50 backdrop-blur-md"
+            style={{ 
+              top: 0, 
+              left: 0,
+              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 50%, rgba(236, 72, 153, 0.1) 100%)'
+            }}
           >
-            <div className="bg-gradient-to-br from-blue-900/80 to-purple-900/80 rounded-2xl p-8 md:p-12 max-w-md w-full mx-4 border border-blue-500/30 shadow-2xl">
-              <div className="text-center mb-8">
-                <div className="text-6xl mb-4">🎯</div>
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                  Welcome to GameFix2025
-                </h2>
-                <p className="text-gray-300 text-lg">
-                  Let's start your research journey
-                </p>
-              </div>
-              
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-white font-semibold mb-2 text-lg">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full p-4 rounded-lg bg-gray-800 text-white text-lg border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
-                    placeholder="Enter your full name"
-                    value={userName}
-                    onChange={e => setUserInfo(e.target.value, userAge, userLocation)}
-                    required
-                  />
-                </div>
+            <div className="relative max-w-lg w-full mx-4">
+              {/* Main Form Card */}
+              <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 md:p-10 shadow-2xl overflow-hidden">
+                {/* Decorative Background Elements */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-2xl"></div>
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-pink-400/20 to-rose-400/20 rounded-full blur-2xl"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-gradient-to-br from-emerald-400/10 to-teal-400/10 rounded-full blur-3xl"></div>
                 
-                <div>
-                  <label className="block text-white font-semibold mb-2 text-lg">
-                    Age
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="120"
-                    className="w-full p-4 rounded-lg bg-gray-800 text-white text-lg border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
-                    placeholder="Enter your age"
-                    value={userAge}
-                    onChange={e => setUserInfo(userName, e.target.value, userLocation)}
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-white font-semibold mb-2 text-lg">
-                    Location
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full p-4 rounded-lg bg-gray-800 text-white text-lg border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
-                    placeholder="City/Province"
-                    value={userLocation}
-                    onChange={e => setUserInfo(userName, userAge, e.target.value)}
-                    required
-                  />
+                {/* Content */}
+                <div className="relative z-10">
+                  <div className="text-center mb-10">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-6 shadow-lg">
+                      <span className="text-4xl">🎯</span>
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent mb-4 leading-tight">
+                      Selamat Datang di Quizzyplay
+                    </h2>
+                    <p className="text-white/80 text-lg font-light">
+                      Mari mulai perjalanan penelitian Anda
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-white font-semibold mb-3 text-lg">
+                        Nama Lengkap
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full p-4 rounded-2xl bg-white/10 backdrop-blur-sm text-white text-lg border border-white/20 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/50 focus:outline-none transition-all duration-300 placeholder-white/50"
+                        placeholder="Masukkan nama lengkap Anda"
+                        value={userName}
+                        onChange={e => setUserInfo(e.target.value, userAge, userLocation)}
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-white font-semibold mb-3 text-lg">
+                        Umur
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="120"
+                        className="w-full p-4 rounded-2xl bg-white/10 backdrop-blur-sm text-white text-lg border border-white/20 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 focus:outline-none transition-all duration-300 placeholder-white/50"
+                        placeholder="Masukkan umur Anda"
+                        value={userAge}
+                        onChange={e => setUserInfo(userName, e.target.value, userLocation)}
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-white font-semibold mb-3 text-lg">
+                        Lokasi
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full p-4 rounded-2xl bg-white/10 backdrop-blur-sm text-white text-lg border border-white/20 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/50 focus:outline-none transition-all duration-300 placeholder-white/50"
+                        placeholder="Kota/Provinsi"
+                        value={userLocation}
+                        onChange={e => setUserInfo(userName, userAge, e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <button
+                    type="submit"
+                    className="group relative w-full mt-10 px-8 py-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-400 hover:via-purple-400 hover:to-pink-400 text-white font-bold text-lg rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none overflow-hidden"
+                    disabled={!userName || !userLocation || !userAge}
+                  >
+                    <span className="relative z-10 flex items-center justify-center">
+                      <span className="mr-2">🚀</span>
+                      Jelajahi Inovasi Kuisioner Interaktif
+                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </button>
                 </div>
               </div>
-              
-              <button
-                type="submit"
-                className="w-full mt-8 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-lg rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                disabled={!userName || !userLocation || !userAge}
-              >
-                🚀 Start Research Journey
-              </button>
             </div>
           </form>
         )}

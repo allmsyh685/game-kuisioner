@@ -120,55 +120,100 @@ export default function Home() {
         </div>
         {/* Overlay */}
         <div className="absolute inset-0 bg-black/60 z-10" />
-        <div className="max-w-3xl mx-auto text-center py-12 relative z-20">
+        <div className="max-w-5xl mx-auto text-center py-12 relative z-20">
+          {/* Outer Title Card (Larger Container) */}
           <div
-            className="inline-block w-full bg-black/60 rounded-2xl shadow-2xl px-6 py-10 md:px-12 md:py-16"
-            style={{ minHeight: '340px', transform: `translateX(${cardShift}px)`, transition: 'transform 500ms ease' }}
+            className="relative w-full backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl shadow-2xl overflow-hidden"
+            style={{ transform: `translateX(${cardShift}px)`, transition: 'transform 500ms ease' }}
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 drop-shadow-lg text-white">{carouselSlides[carouselIndex].title}</h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto drop-shadow-lg text-white">{carouselSlides[carouselIndex].desc}</p>
-            <div className="flex items-center justify-center gap-3 flex-wrap">
-              <a
-                href={carouselSlides[carouselIndex].button.href}
-                className={`font-bold py-4 px-8 rounded-lg text-lg transition-all duration-200 transform hover:scale-105 shadow-lg ${carouselSlides[carouselIndex].button.style}`}
-              >
-                {carouselSlides[carouselIndex].button.text}
-              </a>
-              {carouselIndex === 0 && (
-                <Link
-                  href="/questionnaire"
-                  className="bg-gradient-to-r from-emerald-600 to-lime-600 hover:from-emerald-700 hover:to-lime-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
-                >
-                  📝 ISI SURVEI TANPA PERMAINAN
-                </Link>
-              )}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-black/10"></div>
+            
+            {/* Title Section */}
+            <div className="relative z-10 px-8 py-12">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent leading-tight mb-8">
+                {carouselSlides[carouselIndex].title}
+              </h1>
             </div>
+            
+            {/* Inner Description and Button Card (Smaller, Overlapping) */}
+            <div
+              className="relative mx-8 -mt-6 mb-8 backdrop-blur-md bg-white/15 border border-white/30 rounded-2xl shadow-xl overflow-hidden"
+              style={{ transform: `translateX(${cardShift}px)`, transition: 'transform 500ms ease' }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/5"></div>
+              <div className="relative z-10 px-6 py-8">
+                {/* Description */}
+                <div className="mb-6 max-w-3xl mx-auto">
+                  <p className="text-lg md:text-xl text-white/95 leading-relaxed font-light">
+                    {carouselSlides[carouselIndex].desc}
+                  </p>
+                </div>
+                
+                {/* Button container */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 flex-wrap">
+                  <a
+                    href={carouselSlides[carouselIndex].button.href}
+                    className={`group relative font-bold py-3 px-6 rounded-xl text-base transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl ${carouselSlides[carouselIndex].button.style}`}
+                  >
+                    <span className="relative z-10">{carouselSlides[carouselIndex].button.text}</span>
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </a>
+                  
+                  {carouselIndex === 0 && (
+                    <Link
+                      href="/questionnaire"
+                      className="group relative bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold py-3 px-6 rounded-xl text-base transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                    >
+                      <span className="relative z-10">📝 ISI SURVEI TANPA PERMAINAN</span>
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </Link>
+                  )}
+                </div>
+              </div>
+              <div className="absolute bottom-2 left-2 w-8 h-8 bg-gradient-to-br from-emerald-400/30 to-teal-400/30 rounded-full blur-md"></div>
+            </div>
+            
+            {/* Decorative elements for outer card */}
+            <div className="absolute top-4 right-4 w-16 h-16 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-xl"></div>
+            <div className="absolute bottom-4 left-4 w-12 h-12 bg-gradient-to-br from-pink-400/20 to-rose-400/20 rounded-full blur-xl"></div>
           </div>
         </div>
-        {/* Kontrol Carousel */}
+        {/* Enhanced Carousel Controls */}
         <button
           onClick={prevSlide}
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 hover:bg-opacity-60 text-white rounded-full p-2 z-10"
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 backdrop-blur-md bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-full p-3 z-10 transition-all duration-300 hover:scale-110 shadow-lg"
           aria-label="Slide Sebelumnya"
         >
-          &#8592;
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
         </button>
         <button
           onClick={nextSlide}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 hover:bg-opacity-60 text-white rounded-full p-2 z-10"
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 backdrop-blur-md bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-full p-3 z-10 transition-all duration-300 hover:scale-110 shadow-lg"
           aria-label="Slide Selanjutnya"
         >
-          &#8594;
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
         </button>
-        {/* Titik navigasi (gaya Material Tailwind) */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+        {/* Enhanced Navigation Dots */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-3">
           {carouselSlides.map((_, idx) => (
             <button
               key={idx}
               aria-label={`Ke slide ${idx + 1}`}
               onClick={() => setCarouselIndex(idx)}
-              className={`block h-1 rounded-2xl transition-all ${carouselIndex === idx ? 'w-8 bg-white' : 'w-4 bg-white/50'}`}
-            />
+              className={`relative transition-all duration-300 ${
+                carouselIndex === idx 
+                  ? 'w-8 h-2 bg-white rounded-full shadow-lg' 
+                  : 'w-2 h-2 bg-white/50 rounded-full hover:bg-white/70 hover:scale-125'
+              }`}
+            >
+              {carouselIndex === idx && (
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full animate-pulse"></div>
+              )}
+            </button>
           ))}
         </div>
       </section>

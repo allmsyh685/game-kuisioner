@@ -29,7 +29,7 @@ const Navbar = () => {
               className="object-contain"
             />
             <Link href="/" className="flex items-center space-x-2">
-              <span className="text-white font-bold text-xl">GameFix2025</span>
+              <span className="text-white font-bold text-xl">Quizzyplay</span>
             </Link>
           </div>
 
