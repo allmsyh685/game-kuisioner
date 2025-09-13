@@ -13,7 +13,7 @@ export default function Home() {
     {
       bgImg: '/assets/background_1.jpg',
       title: 'Mulai Survei Penelitian',
-      desc: 'Jelajahi dunia AI yang menarik melalui penelitian interaktif dan permainan pertahanan menara yang menarik.',
+      desc: 'Selamat datang di survei inovasi kuesioner yang dilengkapi dengan permainan.Survei ini terdiri dari 15 pertanyaan yang terbagi menjadi 3 bagian. Antar bagian dilengkapi dengan permainan tower yang terdiri dari 3 level..',
       button: {
         text: '🎯 Mulai Survei Penelitian',
         href: '/game/scene/scene1',
@@ -139,7 +139,7 @@ export default function Home() {
                   href="/questionnaire"
                   className="bg-gradient-to-r from-emerald-600 to-lime-600 hover:from-emerald-700 hover:to-lime-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
                 >
-                  📝 Kuisioner
+                  📝 ISI SURVEI TANPA PERMAINAN
                 </Link>
               )}
             </div>
@@ -181,7 +181,7 @@ export default function Home() {
               Apa yang Akan Kamu Alami
             </h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Kombinasi unik antara riset dan permainan yang membantu kami memahami pola penggunaan AI
+              Kombinasi unik antara riset dan permainan yang membantu kami memahami inovasi kuesioner
             </p>
           </div>
 
@@ -191,7 +191,7 @@ export default function Home() {
               <div className="text-4xl mb-4">📊</div>
               <h3 className="text-xl font-bold text-white mb-4">Survei Riset</h3>
               <p className="text-gray-300">
-                Ikuti survei komprehensif kami tentang pola penggunaan AI, preferensi, dan pengalamanmu.
+                Ikuti survei komprehensif kami tentang inovasi kuesioner
               </p>
             </div>
 
@@ -246,7 +246,7 @@ export default function Home() {
       <footer className="bg-black bg-opacity-40 py-8 px-4 sm:px-6 lg:px-8 border-t border-gray-700">
         <div className="max-w-7xl mx-auto text-center">
           <p className="text-gray-400">
-            © 2025 GameFix2025. All rights reserved. | Research project exploring AI usage patterns
+            © 2025 allmsyh685. All rights reserved. | 
           </p>
         </div>
       </footer>
