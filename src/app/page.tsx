@@ -11,7 +11,7 @@ export default function Home() {
   const [cardShift, setCardShift] = useState(0);
   const carouselSlides = [
     {
-      bgImg: '/assets/background_1.jpg',
+      bgImg: '/assets/background_1.avif',
       title: 'Mulai Survei Penelitian',
       desc: 'Selamat datang di survei inovasi kuesioner yang dilengkapi dengan permainan.Survei ini terdiri dari 15 pertanyaan yang terbagi menjadi 3 bagian. Antar bagian dilengkapi dengan permainan tower yang terdiri dari 3 level.',
       button: {
@@ -21,7 +21,7 @@ export default function Home() {
       },
     },
     {
-      bgImg: '/assets/background-2.jpg',
+      bgImg: '/assets/background-2.avif',
       title: 'Lihat Papan Peringkat',
       desc: 'Bersaing dengan pemain lain dan lihat skor Anda pada sistem papan peringkat dinamis kami.',
       button: {
@@ -31,7 +31,7 @@ export default function Home() {
       },
     },
     {
-      bgImg: '/assets/background-3.jpg',
+      bgImg: '/assets/background-3.avif',
       title: 'Admin Panel',
       desc: 'Akses dashboard admin untuk mengelola pertanyaan, tanggapan, dan banyak lagi.',
       button: {
