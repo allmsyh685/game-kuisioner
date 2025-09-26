@@ -90,7 +90,7 @@ export default function QuestionnairePage() {
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Terima Kasih!</h2>
           <p className="text-gray-600 mb-6">
-            Jawaban Anda telah berhasil dikirim. Data Anda akan digunakan untuk penelitian tentang penggunaan AI.
+            Jawaban Anda telah berhasil dikirim.
           </p>
           <button
             onClick={() => setSubmitted(false)}
@@ -109,10 +109,10 @@ export default function QuestionnairePage() {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
-              Survey Penggunaan Teknologi AI
+              Survey Gamifikasi Kuesioner
             </h1>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Survey ini bertujuan untuk memahami bagaimana teknologi AI digunakan dalam kehidupan sehari-hari. 
+              Survei ini bertujuan untuk memahami pengalaman dan persepsi Anda dalam mengisi kuesioner, serta mengevaluasi inovasi kuesioner dengan unsur permainan. 
               Data yang Anda berikan akan dijaga kerahasiaannya dan hanya digunakan untuk tujuan penelitian.
             </p>
           </div>
@@ -123,13 +123,13 @@ export default function QuestionnairePage() {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Informasi Pribadi</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
                     Nama Lengkap *
                   </label>
                   <input
                     type="text"
                     {...register('name')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500 caret-gray-900"
                     placeholder="Masukkan nama lengkap"
                   />
                   {errors.name && (
@@ -137,13 +137,13 @@ export default function QuestionnairePage() {
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
                     Usia *
                   </label>
                   <input
                     type="number"
                     {...register('age', { valueAsNumber: true })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500 caret-gray-900"
                     placeholder="Masukkan usia"
                   />
                   {errors.age && (
@@ -151,13 +151,13 @@ export default function QuestionnairePage() {
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
                     Lokasi *
                   </label>
                   <input
                     type="text"
                     {...register('location')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500 caret-gray-900"
                     placeholder="Kota/Provinsi"
                   />
                   {errors.location && (

@@ -112,40 +112,50 @@ export default function Home() {
                   fill
                   sizes="100vw"
                   priority={idx === 0}
+                  placeholder="blur"
+                  blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMycgaGVpZ2h0PSczJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnPjxyZWN0IHdpZHRoPSczJyBoZWlnaHQ9JzMnIGZpbGw9JyMyMjInIC8+PC9zdmc+"
+                  quality={60}
+                  loading={idx === 0 ? 'eager' : 'lazy'}
                   style={{ objectFit: 'cover' }}
                 />
               </div>
             ))}
           </div>
         </div>
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-black/60 z-10" />
+        {/* Overlay (darker to guarantee contrast on bright displays) */}
+        <div className="absolute inset-0 bg-black/70 z-10" />
         <div className="max-w-5xl mx-auto text-center py-12 relative z-20">
           {/* Outer Title Card (Larger Container) */}
           <div
-            className="relative w-full backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl shadow-2xl overflow-hidden"
+            className="relative w-full bg-black/40 border border-white/10 rounded-3xl shadow-2xl overflow-hidden"
             style={{ transform: `translateX(${cardShift}px)`, transition: 'transform 500ms ease' }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-black/10"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-black/0"></div>
             
             {/* Title Section */}
             <div className="relative z-10 px-8 py-12">
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent leading-tight mb-8">
+              <h1
+                className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight mb-8"
+                style={{ textShadow: '0 2px 6px rgba(0,0,0,0.8)' }}
+              >
                 {carouselSlides[carouselIndex].title}
               </h1>
             </div>
             
             {/* Inner Description and Button Card (Smaller, Overlapping) */}
             <div
-              className="relative mx-8 -mt-6 mb-8 backdrop-blur-md bg-white/15 border border-white/30 rounded-2xl shadow-xl overflow-hidden"
+              className="relative mx-8 -mt-6 mb-8 bg-black/60 border border-white/20 rounded-2xl shadow-xl overflow-hidden"
               style={{ transform: `translateX(${cardShift}px)`, transition: 'transform 500ms ease' }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/5"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-black/10 via-transparent to-black/0"></div>
               <div className="relative z-10 px-6 py-8">
                 {/* Description */}
                 <div className="mb-6 max-w-3xl mx-auto">
-                  <p className="text-lg md:text-xl text-white/95 leading-relaxed font-light">
-                    {carouselSlides[carouselIndex].desc}
+                  <p className="text-lg md:text-xl text-white leading-relaxed font-light" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)', whiteSpace: 'pre-line' }}>
+                    {carouselSlides[carouselIndex].desc
+                      .split(/(?<=\.)\s*/)
+                      .filter(Boolean)
+                      .join('\n')}
                   </p>
                 </div>
                 
@@ -219,7 +229,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8 bg-black bg-opacity-20">
+      <section className="min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8 bg-black bg-opacity-20" style={{ contentVisibility: 'auto', containIntrinsicSize: '1000px' }}>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 mt-8 mb-8 md:mt-0 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -262,7 +272,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8">
+      <section className="min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8" style={{ contentVisibility: 'auto', containIntrinsicSize: '1000px' }}>
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Apakah Kamu Siap Untuk Memulai Game?

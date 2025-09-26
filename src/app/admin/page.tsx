@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Statistics } from '@/types';
 import { getStatistics } from '@/lib/api';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { Users, FileText, BarChart3, Download, LogOut } from 'lucide-react';
 import PasskeyAuth from '@/components/ui/PasskeyAuth';
 
@@ -106,6 +106,36 @@ export default function AdminDashboard() {
       </div>
     );
   }
+  const wrapTick = (label: string) => {
+    if (!label) return label as any;
+    const words = String(label).split(' ');
+    const lines: string[] = [];
+    let current = '';
+    for (const w of words) {
+      if ((current + ' ' + w).trim().length > 16) {
+        if (current) lines.push(current);
+        current = w;
+      } else {
+        current = (current ? current + ' ' : '') + w;
+      }
+    }
+    if (current) lines.push(current);
+    return lines.join('\n');
+  };
+
+  const PieLegend = (props: any) => {
+    const { payload } = props || {};
+    return (
+      <ul className="mt-2 space-y-1">
+        {(payload || []).map((entry: any, idx: number) => (
+          <li key={idx} className="flex items-center gap-2 text-sm text-gray-700">
+            <span className="inline-block w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
+            <span>{(entry && entry.payload && (entry.payload.name || entry.payload.label)) || entry.value}</span>
+          </li>
+        ))}
+      </ul>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -215,56 +245,60 @@ export default function AdminDashboard() {
           </Link>
         </div>
 
-        {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Charts - one per row for better label readability */}
+        <div className="grid grid-cols-1 gap-8">
           {/* Education Level Chart */}
           <div className="bg-white rounded-xl shadow-sm p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Tingkat Pendidikan</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
+            <ResponsiveContainer width="100%" height={340}>
+              <PieChart margin={{ bottom: 24 }}>
                 <Pie
                   data={statistics?.education_statistics || []}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
+                  label={(props: any) => `${props?.payload?.education_level || ''} ${props?.percent ? (props.percent * 100).toFixed(0) : 0}%`}
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="count"
+                  nameKey="education_level"
                 >
                   {statistics?.education_statistics.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip />
+                <Legend verticalAlign="bottom" align="center" iconType="circle" content={<PieLegend />} />
               </PieChart>
             </ResponsiveContainer>
           </div>
 
           {/* AI Usage Frequency Chart */}
           <div className="bg-white rounded-xl shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Frekuensi Penggunaan AI</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={statistics?.ai_usage_statistics || []}>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Frekuensi Pengisian Survey</h3>
+            <ResponsiveContainer width="100%" height={360}>
+              <BarChart data={statistics?.ai_usage_statistics || []} margin={{ bottom: 70 }}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="ai_usage_frequency" />
+                <XAxis dataKey="ai_usage_frequency" interval={0} tickFormatter={wrapTick} angle={0} dy={10} height={70} tickLine={false} />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="count" fill="#8884d8" />
+                <Legend />
+                <Bar dataKey="count" name="Jumlah" fill="#8884d8" />
               </BarChart>
             </ResponsiveContainer>
           </div>
 
           {/* AI Tool Usage Chart */}
           <div className="bg-white rounded-xl shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">AI Tool yang Digunakan</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={statistics?.ai_tool_statistics || []}>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Penerimaan terhadap integrasi unsur game (gamifikasi) dalam survei</h3>
+            <ResponsiveContainer width="100%" height={360}>
+              <BarChart data={statistics?.ai_tool_statistics || []} margin={{ bottom: 80 }}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="ai_tool_used" />
+                <XAxis dataKey="ai_tool_used" interval={0} tickFormatter={wrapTick} angle={0} dy={12} height={80} tickLine={false} />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="count" fill="#82ca9d" />
+                <Legend />
+                <Bar dataKey="count" name="Jumlah" fill="#82ca9d" />
               </BarChart>
             </ResponsiveContainer>
           </div>

@@ -362,7 +362,10 @@ const Scene: React.FC = () => {
             alt="background"
             fill
             sizes="100vw"
-            priority
+            priority={frameIdx === 0}
+            placeholder="blur"
+            blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMycgaGVpZ2h0PSczJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnPjxyZWN0IHdpZHRoPSczJyBoZWlnaHQ9JzMnIGZpbGw9JyMxMTEnIC8+PC9zdmc+"
+            quality={60}
             style={{ objectFit: 'contain', filter: 'brightness(0.7) blur(0px)' }}
           />
         </div>
@@ -375,16 +378,16 @@ const Scene: React.FC = () => {
               e.preventDefault();
               setUserInfoSubmitted(true);
             }}
-            className="flex flex-col items-center justify-center h-full w-full absolute z-50 backdrop-blur-md"
+            className="flex flex-col items-center justify-center h-full w-full absolute z-50 backdrop-blur-sm"
             style={{ 
               top: 0, 
               left: 0,
-              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 50%, rgba(236, 72, 153, 0.1) 100%)'
+              background: 'linear-gradient(135deg, rgba(10, 10, 10, 0.6) 0%, rgba(10, 10, 10, 0.6) 50%, rgba(10, 10, 10, 0.6) 100%)'
             }}
           >
             <div className="relative max-w-lg w-full mx-4">
               {/* Main Form Card */}
-              <div className="relative backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 md:p-10 shadow-2xl overflow-hidden">
+              <div className="relative bg-black/60 border border-white/10 rounded-3xl p-8 md:p-10 shadow-2xl overflow-hidden">
                 {/* Decorative Background Elements */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-2xl"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-pink-400/20 to-rose-400/20 rounded-full blur-2xl"></div>
@@ -393,13 +396,13 @@ const Scene: React.FC = () => {
                 {/* Content */}
                 <div className="relative z-10">
                   <div className="text-center mb-10">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-6 shadow-lg">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-700 rounded-full mb-6 shadow-lg">
                       <span className="text-4xl">🎯</span>
                     </div>
-                    <h2 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent mb-4 leading-tight">
+                    <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4 leading-tight" style={{ textShadow: '0 2px 6px rgba(0,0,0,0.8)' }}>
                       Selamat Datang di Quizzyplay
                     </h2>
-                    <p className="text-white/80 text-lg font-light">
+                    <p className="text-white text-lg font-light" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
                       Mari mulai perjalanan penelitian Anda
                     </p>
                   </div>
@@ -411,7 +414,7 @@ const Scene: React.FC = () => {
                       </label>
                       <input
                         type="text"
-                        className="w-full p-4 rounded-2xl bg-white/10 backdrop-blur-sm text-white text-lg border border-white/20 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/50 focus:outline-none transition-all duration-300 placeholder-white/50"
+                        className="w-full p-4 rounded-2xl bg-black/60 text-white text-lg border border-white/30 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/50 focus:outline-none transition-all duration-300 placeholder-white/80 caret-white"
                         placeholder="Masukkan nama lengkap Anda"
                         value={userName}
                         onChange={e => setUserInfo(e.target.value, userAge, userLocation)}
@@ -427,7 +430,7 @@ const Scene: React.FC = () => {
                         type="number"
                         min="1"
                         max="120"
-                        className="w-full p-4 rounded-2xl bg-white/10 backdrop-blur-sm text-white text-lg border border-white/20 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 focus:outline-none transition-all duration-300 placeholder-white/50"
+                        className="w-full p-4 rounded-2xl bg-black/60 text-white text-lg border border-white/30 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 focus:outline-none transition-all duration-300 placeholder-white/80 caret-white"
                         placeholder="Masukkan umur Anda"
                         value={userAge}
                         onChange={e => setUserInfo(userName, e.target.value, userLocation)}
@@ -441,7 +444,7 @@ const Scene: React.FC = () => {
                       </label>
                       <input
                         type="text"
-                        className="w-full p-4 rounded-2xl bg-white/10 backdrop-blur-sm text-white text-lg border border-white/20 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/50 focus:outline-none transition-all duration-300 placeholder-white/50"
+                        className="w-full p-4 rounded-2xl bg-black/60 text-white text-lg border border-white/30 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/50 focus:outline-none transition-all duration-300 placeholder-white/80 caret-white"
                         placeholder="Kota/Provinsi"
                         value={userLocation}
                         onChange={e => setUserInfo(userName, userAge, e.target.value)}
@@ -472,7 +475,7 @@ const Scene: React.FC = () => {
             {/* Character Image (optional, absolute center bottom) */}
             {frame.characterImage && (
               <div className="fixed left-1/2 bottom-0 transform -translate-x-1/2 z-20 pointer-events-none">
-                <Image src={frame.characterImage} alt="character" width={384} height={576} priority className="w-96 h-[36rem] object-bottom drop-shadow-2xl" />
+                <Image src={frame.characterImage} alt="character" width={384} height={576} priority={frameIdx === 0} loading={frameIdx === 0 ? 'eager' : 'lazy'} className="w-96 h-[36rem] object-bottom drop-shadow-2xl" />
               </div>
             )}
             {/* Modal dialog + navigation */}
