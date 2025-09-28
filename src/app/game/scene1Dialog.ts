@@ -1,21 +1,6 @@
 // Sebelum scene1Dialog dijalankan, pastikan user sudah mengisi nama dan lokasi di UI
 export const scene1Dialog = [
   {
-    image: '/assets/game/scene1/frame1.png',
-    audio: '/assets/game/scene1/audio1.flac',
-    text: '(berjalan pelan, melihat terminal tua berdebu)',
-    effect: null,
-    questionId: null,
-    autoPlay: false,
-  },
-  {
-    image: '/assets/game/scene1/frame2.png',
-    audio: '/assets/game/scene1/audio1.flac',
-    text: 'Komputer ini tiba-tiba menyala sendiri...',
-    questionId: null,
-    autoPlay: false,
-  },
-  {
     image: '/assets/game/scene1/frame3.png',
     audio: '/assets/game/scene1/audio1.flac',
     text: 'Haloooo…',
@@ -34,7 +19,7 @@ export const scene1Dialog = [
   {
     image: '/assets/game/scene1/frame2.png',
     audio: '/assets/game/scene1/audio1.flac',
-    text: 'E.V.I.: Sebelum kamu mengisi kuesionernya, E.V.I ingin tahu identitasmu.',
+    text: 'EVI: Sebelum kamu mengisi kuesionernya, E.V.I ingin tahu identitasmu.',
     effect: 'blink-shake',
     questionId: null,
     autoPlay: true,
@@ -49,14 +34,14 @@ export const scene1Dialog = [
   {
     image: '/assets/game/scene1/frame2.png',
     audio: '/assets/game/scene1/audio1.flac',
-    text: 'E.V.I.: Terima kasih atas informasinya.',
+    text: 'EVI: Terima kasih atas informasinya.',
     effect: 'blink-shake',
     autoPlay: false,
   },
   {
     image: '/assets/game/scene1/frame2.png',
     audio: '/assets/game/scene1/audio1.flac',
-    text: 'E.V.I.: Sekarang, E.V.I ingin tahu intensitasmu dalam mengisi kuesioner.',
+    text: 'EVI: Sekarang, E.V.I ingin tahu intensitasmu dalam mengisi kuesioner.',
     effect: 'blink-shake',
     autoPlay: false,
   },
@@ -82,21 +67,11 @@ export const scene1Dialog = [
     autoPlay: false,
   },
   {
-    image: '/assets/game/scene1/berguncang1.gif',
+    image: '/assets/game/scene1/frame3.png',
     audio: '/assets/game/scene1/audio1.flac',
-    text: 'Komputer mulai bergetar hebat...',
-    effect: 'shake',
+    text: 'EVI: Terima kasih atas informasinya. Sebagai hadiah selamat bermain game tower defense level 1 berikut ini',
+    effect: 'blink-shake',
     questionId: null,
     autoPlay: true,
   },
-  {
-    image: '/assets/game/scene1/berguncang2.gif',
-    audio: '/assets/game/scene1/audio1.flac',
-    text: 'VIRUS muncul di layar!',
-    effect: 'neon',
-    questionId: null,
-    autoPlay: true,
-    redirectToTowerGames: true,
-    waves: 1,
-  }
  ]; 
