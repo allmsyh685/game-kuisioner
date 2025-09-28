@@ -13,8 +13,18 @@ export default function ExportPage() {
     try {
       const data = await exportResponses();
       
-      // Convert data to CSV format
-      const csvContent = data.map(row => row.join(',')).join('\n');
+      // Convert data to CSV format with proper escaping
+      const csvContent = data.map(row => 
+        row.map(cell => {
+          // Convert to string and escape CSV values
+          const cellStr = String(cell || '');
+          // If cell contains comma, quote, or newline, wrap in quotes and escape quotes
+          if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+            return `"${cellStr.replace(/"/g, '""')}"`;
+          }
+          return cellStr;
+        }).join(',')
+      ).join('\n');
       
       // Create and download file
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

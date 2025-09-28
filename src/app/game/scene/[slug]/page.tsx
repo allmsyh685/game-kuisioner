@@ -362,7 +362,10 @@ const Scene: React.FC = () => {
             alt="background"
             fill
             sizes="100vw"
-            priority
+            priority={frameIdx === 0}
+            placeholder="blur"
+            blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMycgaGVpZ2h0PSczJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnPjxyZWN0IHdpZHRoPSczJyBoZWlnaHQ9JzMnIGZpbGw9JyMxMTEnIC8+PC9zdmc+"
+            quality={60}
             style={{ objectFit: 'contain', filter: 'brightness(0.7) blur(0px)' }}
           />
         </div>
@@ -375,73 +378,94 @@ const Scene: React.FC = () => {
               e.preventDefault();
               setUserInfoSubmitted(true);
             }}
-            className="flex flex-col items-center justify-center h-full w-full bg-black bg-opacity-90 absolute z-50 backdrop-blur-sm"
-            style={{ top: 0, left: 0 }}
+            className="flex flex-col items-center justify-center h-full w-full absolute z-50 backdrop-blur-sm"
+            style={{ 
+              top: 0, 
+              left: 0,
+              background: 'linear-gradient(135deg, rgba(10, 10, 10, 0.6) 0%, rgba(10, 10, 10, 0.6) 50%, rgba(10, 10, 10, 0.6) 100%)'
+            }}
           >
-            <div className="bg-gradient-to-br from-blue-900/80 to-purple-900/80 rounded-2xl p-8 md:p-12 max-w-md w-full mx-4 border border-blue-500/30 shadow-2xl">
-              <div className="text-center mb-8">
-                <div className="text-6xl mb-4">🎯</div>
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                  Welcome to GameFix2025
-                </h2>
-                <p className="text-gray-300 text-lg">
-                  Let's start your research journey
-                </p>
-              </div>
-              
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-white font-semibold mb-2 text-lg">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full p-4 rounded-lg bg-gray-800 text-white text-lg border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
-                    placeholder="Enter your full name"
-                    value={userName}
-                    onChange={e => setUserInfo(e.target.value, userAge, userLocation)}
-                    required
-                  />
-                </div>
+            <div className="relative max-w-lg w-full mx-4">
+              {/* Main Form Card */}
+              <div className="relative bg-black/60 border border-white/10 rounded-3xl p-8 md:p-10 shadow-2xl overflow-hidden">
+                {/* Decorative Background Elements */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-2xl"></div>
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-pink-400/20 to-rose-400/20 rounded-full blur-2xl"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-gradient-to-br from-emerald-400/10 to-teal-400/10 rounded-full blur-3xl"></div>
                 
-                <div>
-                  <label className="block text-white font-semibold mb-2 text-lg">
-                    Age
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="120"
-                    className="w-full p-4 rounded-lg bg-gray-800 text-white text-lg border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
-                    placeholder="Enter your age"
-                    value={userAge}
-                    onChange={e => setUserInfo(userName, e.target.value, userLocation)}
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-white font-semibold mb-2 text-lg">
-                    Location
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full p-4 rounded-lg bg-gray-800 text-white text-lg border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
-                    placeholder="City/Province"
-                    value={userLocation}
-                    onChange={e => setUserInfo(userName, userAge, e.target.value)}
-                    required
-                  />
+                {/* Content */}
+                <div className="relative z-10">
+                  <div className="text-center mb-10">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-700 rounded-full mb-6 shadow-lg">
+                      <span className="text-4xl">🎯</span>
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4 leading-tight" style={{ textShadow: '0 2px 6px rgba(0,0,0,0.8)' }}>
+                      Selamat Datang di Quizzyplay
+                    </h2>
+                    <p className="text-white text-lg font-light" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
+                      Mari mulai perjalanan penelitian Anda
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-white font-semibold mb-3 text-lg">
+                        Nama Lengkap
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full p-4 rounded-2xl bg-black/60 text-white text-lg border border-white/30 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/50 focus:outline-none transition-all duration-300 placeholder-white/80 caret-white"
+                        placeholder="Masukkan nama lengkap Anda"
+                        value={userName}
+                        onChange={e => setUserInfo(e.target.value, userAge, userLocation)}
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-white font-semibold mb-3 text-lg">
+                        Umur
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="120"
+                        className="w-full p-4 rounded-2xl bg-black/60 text-white text-lg border border-white/30 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 focus:outline-none transition-all duration-300 placeholder-white/80 caret-white"
+                        placeholder="Masukkan umur Anda"
+                        value={userAge}
+                        onChange={e => setUserInfo(userName, e.target.value, userLocation)}
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-white font-semibold mb-3 text-lg">
+                        Lokasi
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full p-4 rounded-2xl bg-black/60 text-white text-lg border border-white/30 focus:border-pink-400 focus:ring-2 focus:ring-pink-400/50 focus:outline-none transition-all duration-300 placeholder-white/80 caret-white"
+                        placeholder="Kota/Provinsi"
+                        value={userLocation}
+                        onChange={e => setUserInfo(userName, userAge, e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <button
+                    type="submit"
+                    className="group relative w-full mt-10 px-8 py-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-400 hover:via-purple-400 hover:to-pink-400 text-white font-bold text-lg rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none overflow-hidden"
+                    disabled={!userName || !userLocation || !userAge}
+                  >
+                    <span className="relative z-10 flex items-center justify-center">
+                      <span className="mr-2">🚀</span>
+                      Jelajahi Inovasi Kuisioner Interaktif
+                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </button>
                 </div>
               </div>
-              
-              <button
-                type="submit"
-                className="w-full mt-8 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-lg rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                disabled={!userName || !userLocation || !userAge}
-              >
-                🚀 Start Research Journey
-              </button>
             </div>
           </form>
         )}
@@ -451,7 +475,7 @@ const Scene: React.FC = () => {
             {/* Character Image (optional, absolute center bottom) */}
             {frame.characterImage && (
               <div className="fixed left-1/2 bottom-0 transform -translate-x-1/2 z-20 pointer-events-none">
-                <Image src={frame.characterImage} alt="character" width={384} height={576} priority className="w-96 h-[36rem] object-bottom drop-shadow-2xl" />
+                <Image src={frame.characterImage} alt="character" width={384} height={576} priority={frameIdx === 0} loading={frameIdx === 0 ? 'eager' : 'lazy'} className="w-96 h-[36rem] object-bottom drop-shadow-2xl" />
               </div>
             )}
             {/* Modal dialog + navigation */}

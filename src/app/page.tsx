@@ -11,9 +11,9 @@ export default function Home() {
   const [cardShift, setCardShift] = useState(0);
   const carouselSlides = [
     {
-      bgImg: '/assets/background_1.jpg',
+      bgImg: '/assets/background_1.avif',
       title: 'Mulai Survei Penelitian',
-      desc: 'Jelajahi dunia AI yang menarik melalui penelitian interaktif dan permainan pertahanan menara yang menarik.',
+      desc: 'Selamat datang di survei inovasi kuesioner yang dilengkapi dengan permainan.Survei ini terdiri dari 15 pertanyaan yang terbagi menjadi 3 bagian. Antar bagian dilengkapi dengan permainan tower yang terdiri dari 3 level.',
       button: {
         text: '🎯 Mulai Survei Penelitian',
         href: '/game/scene/scene1',
@@ -21,7 +21,7 @@ export default function Home() {
       },
     },
     {
-      bgImg: '/assets/background-2.jpg',
+      bgImg: '/assets/background-2.avif',
       title: 'Lihat Papan Peringkat',
       desc: 'Bersaing dengan pemain lain dan lihat skor Anda pada sistem papan peringkat dinamis kami.',
       button: {
@@ -31,7 +31,7 @@ export default function Home() {
       },
     },
     {
-      bgImg: '/assets/background-3.jpg',
+      bgImg: '/assets/background-3.avif',
       title: 'Admin Panel',
       desc: 'Akses dashboard admin untuk mengelola pertanyaan, tanggapan, dan banyak lagi.',
       button: {
@@ -112,76 +112,131 @@ export default function Home() {
                   fill
                   sizes="100vw"
                   priority={idx === 0}
+                  placeholder="blur"
+                  blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMycgaGVpZ2h0PSczJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnPjxyZWN0IHdpZHRoPSczJyBoZWlnaHQ9JzMnIGZpbGw9JyMyMjInIC8+PC9zdmc+"
+                  quality={60}
+                  loading={idx === 0 ? 'eager' : 'lazy'}
                   style={{ objectFit: 'cover' }}
                 />
               </div>
             ))}
           </div>
         </div>
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-black/60 z-10" />
-        <div className="max-w-3xl mx-auto text-center py-12 relative z-20">
+        {/* Overlay (darker to guarantee contrast on bright displays) */}
+        <div className="absolute inset-0 bg-black/70 z-10" />
+        <div className="max-w-5xl mx-auto text-center py-12 relative z-20">
+          {/* Outer Title Card (Larger Container) */}
           <div
-            className="inline-block w-full bg-black/60 rounded-2xl shadow-2xl px-6 py-10 md:px-12 md:py-16"
-            style={{ minHeight: '340px', transform: `translateX(${cardShift}px)`, transition: 'transform 500ms ease' }}
+            className="relative w-full bg-black/40 border border-white/10 rounded-3xl shadow-2xl overflow-hidden"
+            style={{ transform: `translateX(${cardShift}px)`, transition: 'transform 500ms ease' }}
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 drop-shadow-lg text-white">{carouselSlides[carouselIndex].title}</h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto drop-shadow-lg text-white">{carouselSlides[carouselIndex].desc}</p>
-            <div className="flex items-center justify-center gap-3 flex-wrap">
-              <a
-                href={carouselSlides[carouselIndex].button.href}
-                className={`font-bold py-4 px-8 rounded-lg text-lg transition-all duration-200 transform hover:scale-105 shadow-lg ${carouselSlides[carouselIndex].button.style}`}
+            <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-black/0"></div>
+            
+            {/* Title Section */}
+            <div className="relative z-10 px-8 py-12">
+              <h1
+                className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight mb-8"
+                style={{ textShadow: '0 2px 6px rgba(0,0,0,0.8)' }}
               >
-                {carouselSlides[carouselIndex].button.text}
-              </a>
-              {carouselIndex === 0 && (
-                <Link
-                  href="/questionnaire"
-                  className="bg-gradient-to-r from-emerald-600 to-lime-600 hover:from-emerald-700 hover:to-lime-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
-                >
-                  📝 Kuisioner
-                </Link>
-              )}
+                {carouselSlides[carouselIndex].title}
+              </h1>
             </div>
+            
+            {/* Inner Description and Button Card (Smaller, Overlapping) */}
+            <div
+              className="relative mx-8 -mt-6 mb-8 bg-black/60 border border-white/20 rounded-2xl shadow-xl overflow-hidden"
+              style={{ transform: `translateX(${cardShift}px)`, transition: 'transform 500ms ease' }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-black/10 via-transparent to-black/0"></div>
+              <div className="relative z-10 px-6 py-8">
+                {/* Description */}
+                <div className="mb-6 max-w-3xl mx-auto">
+                  <p className="text-lg md:text-xl text-white leading-relaxed font-light" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)', whiteSpace: 'pre-line' }}>
+                    {carouselSlides[carouselIndex].desc
+                      .split(/(?<=\.)\s*/)
+                      .filter(Boolean)
+                      .join('\n')}
+                  </p>
+                </div>
+                
+                {/* Button container */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 flex-wrap">
+                  <a
+                    href={carouselSlides[carouselIndex].button.href}
+                    className={`group relative font-bold py-3 px-6 rounded-xl text-base transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl ${carouselSlides[carouselIndex].button.style}`}
+                  >
+                    <span className="relative z-10">{carouselSlides[carouselIndex].button.text}</span>
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </a>
+                  
+                  {carouselIndex === 0 && (
+                    <Link
+                      href="/questionnaire"
+                      className="group relative bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold py-3 px-6 rounded-xl text-base transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                    >
+                      <span className="relative z-10">📝 ISI SURVEI TANPA PERMAINAN</span>
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </Link>
+                  )}
+                </div>
+              </div>
+              <div className="absolute bottom-2 left-2 w-8 h-8 bg-gradient-to-br from-emerald-400/30 to-teal-400/30 rounded-full blur-md"></div>
+            </div>
+            
+            {/* Decorative elements for outer card */}
+            <div className="absolute top-4 right-4 w-16 h-16 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-xl"></div>
+            <div className="absolute bottom-4 left-4 w-12 h-12 bg-gradient-to-br from-pink-400/20 to-rose-400/20 rounded-full blur-xl"></div>
           </div>
         </div>
-        {/* Kontrol Carousel */}
+        {/* Enhanced Carousel Controls */}
         <button
           onClick={prevSlide}
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 hover:bg-opacity-60 text-white rounded-full p-2 z-10"
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 backdrop-blur-md bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-full p-3 z-10 transition-all duration-300 hover:scale-110 shadow-lg"
           aria-label="Slide Sebelumnya"
         >
-          &#8592;
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
         </button>
         <button
           onClick={nextSlide}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-30 hover:bg-opacity-60 text-white rounded-full p-2 z-10"
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 backdrop-blur-md bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-full p-3 z-10 transition-all duration-300 hover:scale-110 shadow-lg"
           aria-label="Slide Selanjutnya"
         >
-          &#8594;
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
         </button>
-        {/* Titik navigasi (gaya Material Tailwind) */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+        {/* Enhanced Navigation Dots */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-3">
           {carouselSlides.map((_, idx) => (
             <button
               key={idx}
               aria-label={`Ke slide ${idx + 1}`}
               onClick={() => setCarouselIndex(idx)}
-              className={`block h-1 rounded-2xl transition-all ${carouselIndex === idx ? 'w-8 bg-white' : 'w-4 bg-white/50'}`}
-            />
+              className={`relative transition-all duration-300 ${
+                carouselIndex === idx 
+                  ? 'w-8 h-2 bg-white rounded-full shadow-lg' 
+                  : 'w-2 h-2 bg-white/50 rounded-full hover:bg-white/70 hover:scale-125'
+              }`}
+            >
+              {carouselIndex === idx && (
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full animate-pulse"></div>
+              )}
+            </button>
           ))}
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8 bg-black bg-opacity-20">
+      <section className="min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8 bg-black bg-opacity-20" style={{ contentVisibility: 'auto', containIntrinsicSize: '1000px' }}>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 mt-8 mb-8 md:mt-0 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Apa yang Akan Kamu Alami
             </h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Kombinasi unik antara riset dan permainan yang membantu kami memahami pola penggunaan AI
+              Kombinasi unik antara riset dan permainan yang membantu kami memahami inovasi kuesioner
             </p>
           </div>
 
@@ -191,7 +246,7 @@ export default function Home() {
               <div className="text-4xl mb-4">📊</div>
               <h3 className="text-xl font-bold text-white mb-4">Survei Riset</h3>
               <p className="text-gray-300">
-                Ikuti survei komprehensif kami tentang pola penggunaan AI, preferensi, dan pengalamanmu.
+                Ikuti survei komprehensif kami tentang inovasi kuesioner
               </p>
             </div>
 
@@ -217,7 +272,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8">
+      <section className="min-h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-8" style={{ contentVisibility: 'auto', containIntrinsicSize: '1000px' }}>
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Apakah Kamu Siap Untuk Memulai Game?
@@ -246,7 +301,7 @@ export default function Home() {
       <footer className="bg-black bg-opacity-40 py-8 px-4 sm:px-6 lg:px-8 border-t border-gray-700">
         <div className="max-w-7xl mx-auto text-center">
           <p className="text-gray-400">
-            © 2025 GameFix2025. All rights reserved. | Research project exploring AI usage patterns
+            © 2025 allmsyh685. All rights reserved. | 
           </p>
         </div>
       </footer>
