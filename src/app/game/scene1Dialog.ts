@@ -73,5 +73,7 @@ export const scene1Dialog = [
     effect: 'blink-shake',
     questionId: null,
     autoPlay: true,
+    redirectToTowerGames: true,
+    waves: 1,
   },
  ]; 
