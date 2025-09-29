@@ -58,10 +58,10 @@ export default function ResponsesPage() {
 
   if (loading) {
     return (
-      <AdminProtected title="Responses Survey" description="Lihat semua jawaban dari responden">
+      <AdminProtected title="Respons Survei" description="Lihat semua jawaban dari responden">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Memuat responses...</p>
+          <p className="mt-4 text-gray-600">Memuat respons...</p>
         </div>
       </AdminProtected>
     );
@@ -73,7 +73,7 @@ export default function ResponsesPage() {
         {/* Header with Total Count */}
         <div className="flex justify-between items-center">
           <div className="text-right">
-            <p className="text-sm text-gray-600">Total Responses</p>
+            <p className="text-sm text-gray-600">Total Respons</p>
             <p className="text-2xl font-bold text-gray-900">{responses.length}</p>
           </div>
         </div>
@@ -145,7 +145,7 @@ export default function ResponsesPage() {
             <div className="bg-white rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold text-gray-900">
-                  Detail Response - {selectedResponse.name}
+                  Detail Respons - {selectedResponse.name}
                 </h2>
                 <button
                   onClick={() => setShowModal(false)}

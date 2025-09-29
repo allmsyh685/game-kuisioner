@@ -12,7 +12,7 @@ export default function Home() {
   const carouselSlides = [
     {
       bgImg: '/assets/background_1.avif',
-      title: 'Mulai Survei Penelitian',
+      title: 'Survei Penelitian',
       desc: 'Selamat datang di survei inovasi kuesioner yang dilengkapi dengan permainan.Survei ini terdiri dari 15 pertanyaan yang terbagi menjadi 3 bagian. Antar bagian dilengkapi dengan permainan tower yang terdiri dari 3 level.',
       button: {
         text: '🎯 Mulai Survei Penelitian',

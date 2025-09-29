@@ -88,11 +88,11 @@ const Leaderboard: React.FC = () => {
       <div className="text-center mb-12">
         <h1 className="text-5xl md:text-6xl font-bold mb-4">
           <span className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
-            🏆 Leaderboard
+            🏆 Papan Peringkat
           </span>
         </h1>
         <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-          Top players from our tower defense research game. Can you make it to the top?
+          Pemain terbaik dari permainan penelitian pertahanan menara kami. Bisakah kamu mencapai puncak?
         </p>
       </div>
 
@@ -101,10 +101,10 @@ const Leaderboard: React.FC = () => {
         <div className="w-full max-w-2xl mb-8">
           <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-4 rounded-xl shadow-lg border border-emerald-400/40">
             <div className="text-center">
-              <div className="text-2xl font-bold mb-1">🎉 Well done, {userName}!</div>
+              <div className="text-2xl font-bold mb-1">🎉 Bagus sekali, {userName}!</div>
               <div className="text-lg">
-                You scored <span className="font-semibold">{userPoints.toLocaleString()}</span> points
-                {userRank ? <> and your current rank is <span className="font-semibold">#{userRank}</span></> : null}.
+                Kamu mendapat <span className="font-semibold">{userPoints.toLocaleString()}</span> poin
+                {userRank ? <> dan peringkat kamu saat ini adalah <span className="font-semibold">#{userRank}</span></> : null}.
               </div>
             </div>
           </div>
@@ -116,7 +116,7 @@ const Leaderboard: React.FC = () => {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-16">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-yellow-400 mb-4"></div>
-            <p className="text-gray-300 text-lg">Loading leaderboard...</p>
+            <p className="text-gray-300 text-lg">Memuat papan peringkat...</p>
           </div>
         ) : error ? (
           <div className="text-center py-16">
@@ -126,19 +126,19 @@ const Leaderboard: React.FC = () => {
               onClick={() => window.location.reload()}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
             >
-              Try Again
+              Coba Lagi
             </button>
           </div>
         ) : scores.length === 0 ? (
           <div className="text-center py-16">
             <div className="text-6xl mb-4">📊</div>
-            <div className="text-gray-300 text-xl mb-4">No scores yet</div>
-            <p className="text-gray-400 mb-6">Be the first to play and set a record!</p>
+            <div className="text-gray-300 text-xl mb-4">Belum ada skor</div>
+            <p className="text-gray-400 mb-6">Jadilah yang pertama bermain dan buat rekor!</p>
             <Link
               href="/game/scene/scene1"
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-105"
             >
-              Start Playing
+              Mulai Bermain
             </Link>
           </div>
         ) : (
@@ -160,7 +160,7 @@ const Leaderboard: React.FC = () => {
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold">{score.points.toLocaleString()}</div>
-                    <div className="text-sm opacity-75">points</div>
+                    <div className="text-sm opacity-75">poin</div>
                   </div>
                 </div>
               </div>
@@ -175,19 +175,19 @@ const Leaderboard: React.FC = () => {
           href="/game/scene/scene1"
           className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
         >
-          🎯 Start New Game
+          🎯 Mulai Permainan Baru
         </Link>
         <Link
           href="/towergames"
           className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-bold py-3 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
         >
-          🏰 Play Tower Defense
+          🏰 Mainkan Pertahanan Menara
         </Link>
         <Link
           href="/"
           className="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-bold py-3 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
         >
-          🏠 Back to Home
+          🏠 Kembali ke Beranda
         </Link>
       </div>
 
@@ -195,29 +195,29 @@ const Leaderboard: React.FC = () => {
       {scores.length > 0 && (
         <div className="mt-12 text-center">
           <div className="bg-black bg-opacity-30 rounded-xl p-6 border border-gray-700">
-            <h3 className="text-xl font-bold text-white mb-4">Leaderboard Stats</h3>
+            <h3 className="text-xl font-bold text-white mb-4">Statistik Papan Peringkat</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
                 <div className="text-2xl font-bold text-yellow-400">{scores.length}</div>
-                <div className="text-gray-400">Total Players</div>
+                <div className="text-gray-400">Total Pemain</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-green-400">
                   {scores.length > 0 ? scores[0].points.toLocaleString() : '0'}
                 </div>
-                <div className="text-gray-400">Highest Score</div>
+                <div className="text-gray-400">Skor Tertinggi</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-blue-400">
                   {scores.length > 0 ? Math.round(scores.reduce((sum, score) => sum + score.points, 0) / scores.length).toLocaleString() : '0'}
                 </div>
-                <div className="text-gray-400">Average Score</div>
+                <div className="text-gray-400">Skor Rata-rata</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-purple-400">
                   {scores.length > 0 ? scores[scores.length - 1].points.toLocaleString() : '0'}
                 </div>
-                <div className="text-gray-400">Lowest Score</div>
+                <div className="text-gray-400">Skor Terendah</div>
               </div>
             </div>
           </div>

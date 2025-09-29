@@ -81,7 +81,7 @@ export default function AdminProtected({ children, title, description }: AdminPr
         {/* Header with Logout Button */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{title || 'Admin Panel'}</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{title || 'Panel Admin'}</h1>
             <p className="text-gray-600">{description || 'Kelola data dan pengaturan'}</p>
           </div>
           <button
@@ -89,7 +89,7 @@ export default function AdminProtected({ children, title, description }: AdminPr
             className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
           >
             <LogOut className="w-4 h-4 mr-2" />
-            Logout
+            Keluar
           </button>
         </div>
 

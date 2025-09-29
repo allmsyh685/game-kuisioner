@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Statistics } from '@/types';
 import { getStatistics } from '@/lib/api';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { PieChart, Pie, Cell, Legend, ResponsiveContainer, Tooltip } from 'recharts';
 import { Users, FileText, BarChart3, Download, LogOut } from 'lucide-react';
 import PasskeyAuth from '@/components/ui/PasskeyAuth';
+import { BarChartComponent, BarChartLegend } from '@/components/charts';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
@@ -106,22 +107,6 @@ export default function AdminDashboard() {
       </div>
     );
   }
-  const wrapTick = (label: string) => {
-    if (!label) return label as any;
-    const words = String(label).split(' ');
-    const lines: string[] = [];
-    let current = '';
-    for (const w of words) {
-      if ((current + ' ' + w).trim().length > 16) {
-        if (current) lines.push(current);
-        current = w;
-      } else {
-        current = (current ? current + ' ' : '') + w;
-      }
-    }
-    if (current) lines.push(current);
-    return lines.join('\n');
-  };
 
   const PieLegend = (props: any) => {
     const { payload } = props || {};
@@ -143,15 +128,15 @@ export default function AdminDashboard() {
         {/* Header with Logout Button */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-            <p className="text-gray-600">Kelola survey dan lihat statistik respons</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Admin</h1>
+            <p className="text-gray-600">Kelola survei dan lihat statistik respons</p>
           </div>
           <button
             onClick={handleLogout}
             className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
           >
             <LogOut className="w-4 h-4 mr-2" />
-            Logout
+            Keluar
           </button>
         </div>
 
@@ -163,7 +148,7 @@ export default function AdminDashboard() {
                 <Users className="w-6 h-6 text-blue-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Responses</p>
+                <p className="text-sm font-medium text-gray-600">Total Respons</p>
                 <p className="text-2xl font-bold text-gray-900">{statistics?.total_responses || 0}</p>
               </div>
             </div>
@@ -175,7 +160,7 @@ export default function AdminDashboard() {
                 <FileText className="w-6 h-6 text-green-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Questions</p>
+                <p className="text-sm font-medium text-gray-600">Pertanyaan</p>
                 <p className="text-2xl font-bold text-gray-900">10</p>
               </div>
             </div>
@@ -187,7 +172,7 @@ export default function AdminDashboard() {
                 <BarChart3 className="w-6 h-6 text-purple-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Active</p>
+                <p className="text-sm font-medium text-gray-600">Aktif</p>
                 <p className="text-2xl font-bold text-gray-900">10</p>
               </div>
             </div>
@@ -199,7 +184,7 @@ export default function AdminDashboard() {
                 <Download className="w-6 h-6 text-orange-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Export</p>
+                <p className="text-sm font-medium text-gray-600">Ekspor</p>
                 <p className="text-2xl font-bold text-gray-900">CSV</p>
               </div>
             </div>
@@ -226,7 +211,7 @@ export default function AdminDashboard() {
                 <div className="p-2 bg-green-100 rounded-lg">
                   <Users className="w-5 h-5 text-green-600" />
                 </div>
-                <h3 className="ml-3 text-lg font-semibold text-gray-900">Lihat Responses</h3>
+                <h3 className="ml-3 text-lg font-semibold text-gray-900">Lihat Respons</h3>
               </div>
               <p className="text-gray-600">Lihat semua jawaban dari responden</p>
             </div>
@@ -238,9 +223,9 @@ export default function AdminDashboard() {
                 <div className="p-2 bg-orange-100 rounded-lg">
                   <Download className="w-5 h-5 text-orange-600" />
                 </div>
-                <h3 className="ml-3 text-lg font-semibold text-gray-900">Export Data</h3>
+                <h3 className="ml-3 text-lg font-semibold text-gray-900">Ekspor Data</h3>
               </div>
-              <p className="text-gray-600">Download data dalam format CSV</p>
+              <p className="text-gray-600">Unduh data dalam format CSV</p>
             </div>
           </Link>
         </div>
@@ -274,33 +259,37 @@ export default function AdminDashboard() {
           </div>
 
           {/* AI Usage Frequency Chart */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Frekuensi Pengisian Survey</h3>
-            <ResponsiveContainer width="100%" height={360}>
-              <BarChart data={statistics?.ai_usage_statistics || []} margin={{ bottom: 70 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="ai_usage_frequency" interval={0} tickFormatter={wrapTick} angle={0} dy={10} height={70} tickLine={false} />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="count" name="Jumlah" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <BarChartComponent
+              data={statistics?.ai_usage_statistics || []}
+              dataKey="ai_usage_frequency"
+              title="Frekuensi Pengisian Survey"
+              colors={COLORS}
+              height={300}
+            />
+            <BarChartLegend
+              data={statistics?.ai_usage_statistics || []}
+              dataKey="ai_usage_frequency"
+              title="Detail Frekuensi Pengisian Survey"
+              colors={COLORS}
+            />
           </div>
 
           {/* AI Tool Usage Chart */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Penerimaan terhadap integrasi unsur game (gamifikasi) dalam survei</h3>
-            <ResponsiveContainer width="100%" height={360}>
-              <BarChart data={statistics?.ai_tool_statistics || []} margin={{ bottom: 80 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="ai_tool_used" interval={0} tickFormatter={wrapTick} angle={0} dy={12} height={80} tickLine={false} />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="count" name="Jumlah" fill="#82ca9d" />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <BarChartComponent
+              data={statistics?.ai_tool_statistics || []}
+              dataKey="ai_tool_used"
+              title="Penerimaan terhadap integrasi unsur game (gamifikasi) dalam survei"
+              colors={COLORS}
+              height={300}
+            />
+            <BarChartLegend
+              data={statistics?.ai_tool_statistics || []}
+              dataKey="ai_tool_used"
+              title="Detail Penerimaan Gamifikasi"
+              colors={COLORS}
+            />
           </div>
 
           {/* Recent Activity */}

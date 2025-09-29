@@ -47,7 +47,7 @@ export default function ExportPage() {
   };
 
   return (
-    <AdminProtected title="Export Data" description="Download semua data responses dalam format CSV">
+    <AdminProtected title="Ekspor Data" description="Unduh semua data respons dalam format CSV">
       <div className="space-y-6">
         <div className="bg-white rounded-xl shadow-sm p-8">
           <div className="text-center">
@@ -56,13 +56,13 @@ export default function ExportPage() {
             </div>
             
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Export Responses Survey
+              Ekspor Respons Survei
             </h2>
             
             <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-              Klik tombol di bawah untuk mengunduh semua data responses dalam format CSV. 
+              Klik tombol di bawah untuk mengunduh semua data respons dalam format CSV. 
               File akan berisi informasi lengkap dari semua responden termasuk data pribadi 
-              dan jawaban survey mereka.
+              dan jawaban survei mereka.
             </p>
 
             <button
@@ -73,12 +73,12 @@ export default function ExportPage() {
               {exporting ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Mengexport...
+                  Mengekspor...
                 </>
               ) : (
                 <>
                   <Download className="w-4 h-8" />
-                  Download CSV
+                  Unduh CSV
                 </>
               )}
             </button>
@@ -99,8 +99,8 @@ export default function ExportPage() {
             
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <Download className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-              <h3 className="font-medium text-gray-900 mb-1">Download Cepat</h3>
-              <p className="text-sm text-gray-600">Proses export yang cepat</p>
+              <h3 className="font-medium text-gray-900 mb-1">Unduh Cepat</h3>
+              <p className="text-sm text-gray-600">Proses ekspor yang cepat</p>
             </div>
           </div>
         </div>

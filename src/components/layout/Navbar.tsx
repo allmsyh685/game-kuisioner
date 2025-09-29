@@ -29,7 +29,7 @@ const Navbar = () => {
               className="object-contain"
             />
             <Link href="/" className="flex items-center space-x-2">
-              <span className="text-white font-bold text-xl">Quizzyplay</span>
+              <span className="text-white font-bold text-xl">QuizzyPlay</span>
             </Link>
           </div>
 
@@ -116,21 +116,21 @@ const Navbar = () => {
             onClick={closeMobileMenu}
             className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors"
           >
-            Home
+            Beranda
           </Link>
           <Link
             href="/questionnaire"
             onClick={closeMobileMenu}
             className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors"
           >
-            Questionnaire
+            Kuisioner
           </Link>
           <Link
             href="/towergames"
             onClick={closeMobileMenu}
             className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors"
           >
-            Tower Games
+            Permainan Pertahanan Menara
           </Link>
           <Link
             href="/admin"

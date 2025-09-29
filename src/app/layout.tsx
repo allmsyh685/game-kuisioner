@@ -8,7 +8,7 @@ import Navbar from "@/components/layout/Navbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "GameFix2025 - AI Research Game",
+  title: "QuizzyPlay - Gamifikasi Survey",
   description: "Game penelitian interaktif yang mengeksplorasi pola penggunaan AI dan gameplay pertahanan menara",
 };
 
@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="id">
       <body className={inter.className}>
         <Navbar />
         <main className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
