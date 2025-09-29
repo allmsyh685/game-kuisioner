@@ -151,6 +151,14 @@ Create a `.env.local` file with the following variables:
 NEXT_PUBLIC_API_URL=http://localhost:8000/api
 ```
 
+## UML Diagrams
+
+### Admin Flow
+![Admin Flow](./UML_FE_ADMIN.png)
+
+### User Flow
+![User Flow](./UML_FE_USER.png)
+
 ## Contributing
 
 1. Fork the repository

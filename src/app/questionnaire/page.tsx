@@ -96,7 +96,7 @@ export default function QuestionnairePage() {
             onClick={() => setSubmitted(false)}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Isi Survey Lagi
+            Isi Survei Lagi
           </button>
         </div>
       </div>
@@ -109,7 +109,7 @@ export default function QuestionnairePage() {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
-              Survey Gamifikasi Kuesioner
+              Survei Gamifikasi Kuesioner
             </h1>
             <p className="text-gray-600 max-w-2xl mx-auto">
               Survei ini bertujuan untuk memahami pengalaman dan persepsi Anda dalam mengisi kuesioner, serta mengevaluasi inovasi kuesioner dengan unsur permainan. 

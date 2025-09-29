@@ -46,7 +46,7 @@ const Navbar = () => {
                 href="/questionnaire"
                 className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
-                Kuisioner
+                Kuesioner
               </Link>
               <Link
                 href="/towergames"
@@ -123,7 +123,7 @@ const Navbar = () => {
             onClick={closeMobileMenu}
             className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors"
           >
-            Kuisioner
+            Kuesioner
           </Link>
           <Link
             href="/towergames"

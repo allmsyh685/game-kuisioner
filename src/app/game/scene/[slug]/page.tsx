@@ -403,7 +403,7 @@ const Scene: React.FC = () => {
                       Selamat Datang di Quizzyplay
                     </h2>
                     <p className="text-white text-lg font-light" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}>
-                      Mari mulai perjalanan penelitian Anda
+                      Mari mulai pengisian survei Anda
                     </p>
                   </div>
                   
