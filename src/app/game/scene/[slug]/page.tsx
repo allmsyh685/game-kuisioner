@@ -36,7 +36,7 @@ interface Scene1Frame {
   isSubmit?: boolean; // when true, submit survey + score here
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://kuisioner-api-production.up.railway.app/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://quitionnaireapi-production.up.railway.app/api';
 const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN || '';
 
 function getIdentifikasiText(userName: string, userAge: string, userLocation: string) {

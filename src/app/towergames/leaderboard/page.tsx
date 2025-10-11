@@ -10,7 +10,7 @@ interface Score {
   created_at: string;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://kuisioner-api-production.up.railway.app/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://quitionnaireapi-production.up.railway.app/api';
 const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN || '';
 
 const Leaderboard: React.FC = () => {
