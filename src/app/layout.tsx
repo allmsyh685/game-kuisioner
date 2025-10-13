@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "QuizzyPlay - Gamifikasi Survey",
-  description: "Game penelitian interaktif yang mengeksplorasi pola penggunaan AI dan gameplay pertahanan menara",
+  description: "Inovasi kuesioner dilengkapi permainan pertahanan menara",
 };
 
 export default function RootLayout({

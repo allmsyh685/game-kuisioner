@@ -1,39 +1,15 @@
 import axios from 'axios';
 import { Question, ApiResponse, Statistics, CreateQuestionData, UpdateQuestionData, SubmitResponsePayload, ResponseMaster, AdminQuestionView } from '@/types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://quitionnaireapi-production.up.railway.app/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://kuisioner-api-production.up.railway.app/api';
 const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN || '';
-
-// Create axios instance
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
     ...(API_TOKEN ? { 'Authorization': `Bearer ${API_TOKEN}` } : {}),
   },
 });
-
-// Log detailed server errors to aid debugging in development/production
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const status = error?.response?.status;
-    const data = error?.response?.data;
-    const method = error?.config?.method?.toUpperCase();
-    const path = error?.config?.url || '';
-    const url = `${api.defaults.baseURL}${path}`;
-    const message = error?.message || 'Unknown error';
-    // eslint-disable-next-line no-console
-    console.error('API request failed:', {
-      status,
-      method,
-      url,
-      message,
-      data: typeof data === 'object' ? JSON.stringify(data) : data,
-    });
-    return Promise.reject(error);
-  }
-);
 
 // Public API calls
 export const getQuestions = async (): Promise<Question[]> => {
@@ -48,8 +24,17 @@ export const submitResponse = async (data: SubmitResponsePayload): Promise<Respo
 
 // Admin API calls
 export const getAdminQuestions = async (): Promise<AdminQuestionView[]> => {
-  const response = await api.get<ApiResponse<AdminQuestionView[]>>('/admin/questions');
-  return response.data.data;
+  const response = await api.get<ApiResponse<Question[]>>('/admin/questions');
+  // Map backend Question (with structured options) to AdminQuestionView (options as strings)
+  return response.data.data.map((q) => ({
+    id: q.id,
+    question_text: q.question_text,
+    options: q.options.map((o) => o.text),
+    order: q.order,
+    is_active: q.is_active,
+    created_at: q.created_at,
+    updated_at: q.updated_at,
+  }));
 };
 
 export const createQuestion = async (data: CreateQuestionData): Promise<Question> => {
