@@ -24,17 +24,8 @@ export const submitResponse = async (data: SubmitResponsePayload): Promise<Respo
 
 // Admin API calls
 export const getAdminQuestions = async (): Promise<AdminQuestionView[]> => {
-  const response = await api.get<ApiResponse<Question[]>>('/admin/questions');
-  // Map backend Question (with structured options) to AdminQuestionView (options as strings)
-  return response.data.data.map((q) => ({
-    id: q.id,
-    question_text: q.question_text,
-    options: q.options.map((o) => o.text),
-    order: q.order,
-    is_active: q.is_active,
-    created_at: q.created_at,
-    updated_at: q.updated_at,
-  }));
+  const response = await api.get<ApiResponse<AdminQuestionView[]>>('/admin/questions');
+  return response.data.data;
 };
 
 export const createQuestion = async (data: CreateQuestionData): Promise<Question> => {
