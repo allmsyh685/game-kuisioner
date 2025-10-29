@@ -88,7 +88,8 @@ const Scene: React.FC = () => {
       setLoading(true);
       axios.get(`${API_BASE}/questions`, { headers: { ...(API_TOKEN ? { 'Authorization': `Bearer ${API_TOKEN}` } : {}) } })
         .then(res => {
-          let q = res.data.data.find((q: unknown) => Number((q as { id: number }).id) === Number(frame.questionId));
+          // Find question by order instead of ID to handle edited questions properly
+          let q = res.data.data.find((q: unknown) => Number((q as { order: number }).order) === Number(frame.questionId));
           if (q) {
             // mapping field agar frontend dapat .text, .type, .options
             q = {
